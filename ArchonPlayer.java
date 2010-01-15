@@ -19,10 +19,24 @@ public class ArchonPlayer implements BasePlayer {
                 while (myRC.isMovementActive()) {
                     myRC.yield();
                 }
-
+                Robot[] nbrs = myRC.senseNearbyGroundRobots();
+                for(Robot r : nbrs)
+                {
+                    
+                    RobotInfo info = myRC.senseRobotInfo(r);
+                    if(info.type == RobotType.WOUT && info.team.equals(myRC.getTeam()))
+                    {
+                        double maxTransfer = info.maxEnergon - info.eventualEnergon;
+                        if(maxTransfer < myRC.getEnergonLevel())
+                        {
+                            myRC.transferUnitEnergon(1, info.location, RobotLevel.ON_GROUND); 
+                        }
+                    }
+                }
                 if(myRC.getEnergonLevel() > RobotType.WOUT.spawnCost()) {
                     myRC.spawn(RobotType.WOUT);
                 }
+                
 
                 if (myRC.canMove(myRC.getDirection())) {
                     System.out.println("about to move");
