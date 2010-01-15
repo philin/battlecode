@@ -3,11 +3,12 @@ package team338;
 import battlecode.common.*;
 import static battlecode.common.GameConstants.*;
 
-public class RobotPlayer implements Runnable {
-
+public class RobotPlayer implements Runnable
+{
     private BasePlayer player;
 
-    public RobotPlayer(RobotController rc) {
+    public RobotPlayer(RobotController rc)
+    {
         switch(rc.getRobotType()){
         case ARCHON:
             player = new ArchonPlayer(rc);
@@ -36,7 +37,8 @@ public class RobotPlayer implements Runnable {
         }
     }
 
-    public void run() {
+    public void run()
+    {
         player.run();
     }
 }
