@@ -19,7 +19,7 @@ public class RobotPlayer implements Runnable {
                 System.out.println("No Turrets yet");
                 break;
             case WOUT:
-                player = new ArchonPlayer(rc);
+                player = new WoutPlayer(rc);
                 break;
         }
     }
