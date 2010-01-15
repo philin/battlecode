@@ -20,6 +20,10 @@ public class ArchonPlayer implements BasePlayer {
                     myRC.yield();
                 }
 
+                if(myRC.getEnergonLevel() > RobotType.WOUT.spawnCost()) {
+                    myRC.spawn(RobotType.WOUT);
+                }
+
                 if (myRC.canMove(myRC.getDirection())) {
                     System.out.println("about to move");
                     myRC.moveForward();
