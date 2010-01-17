@@ -4,7 +4,7 @@ package team338;
 import battlecode.common.*;
 import static battlecode.common.GameConstants.*;
 
-public class ArchonPlayer implements BasePlayer
+public class ArchonPlayer extends BasePlayer
 {
 
     private final RobotController myRC;

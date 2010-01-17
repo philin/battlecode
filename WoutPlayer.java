@@ -3,7 +3,7 @@ package team338;
 import battlecode.common.*;
 import static battlecode.common.GameConstants.*;
 
-public class WoutPlayer implements BasePlayer
+public class WoutPlayer extends BasePlayer
 {
     private final RobotController myRC;
     private final Team team;//safely assume this does not change
