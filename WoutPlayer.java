@@ -36,28 +36,35 @@ public class WoutPlayer extends BasePlayer
             {
                 MapLocation loc = myRC.getLocation();
                 Direction currDir = myRC.getDirection();
+                MapLocation minArch = null;
+                int minDistSquared=-1;
+                for(MapLocation arch: myRC.senseAlliedArchons())
+                {
+                    if(minArch==null)
+                    {
+                        minArch=arch;
+                        minDistSquared = arch.distanceSquaredTo(loc);
+                    }
+                    else
+                    {
+                        int dist = arch.distanceSquaredTo(loc);
+                        if(dist<minDistSquared){
+                            minDistSquared=dist;
+                            minArch=arch;
+                        }
+                    }
+                    if(minDistSquared<=1){
+                        break;
+                    }
+                }
+                if(minDistSquared<=2 && minArch != null){
+                    myRC.transferFlux(myRC.getFlux(),minArch,RobotLevel.IN_AIR);
+                }
+
                 //if can move
                 if (!myRC.isMovementActive()){
                     if(myRC.getEnergonLevel()<ARCHON_FIND_THRESHOLD)
                     {
-                        MapLocation minArch = null;
-                        int minDistSquared=-1;
-                        for(MapLocation arch: myRC.senseAlliedArchons())
-                        {
-                            if(minArch==null)
-                            {
-                                minArch=arch;
-                                minDistSquared = arch.distanceSquaredTo(loc);
-                            }
-                            else
-                            {
-                                int dist = arch.distanceSquaredTo(loc);
-                                if(dist<minDistSquared){
-                                    minDistSquared=dist;
-                                    minArch=arch;
-                                }
-                            }
-                        }
                         while(minArch==null){
                             //we've lost
                             myRC.yield();
