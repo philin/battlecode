@@ -17,15 +17,11 @@ public class ArchonPlayer implements BasePlayer
     public void run()
     {
         //System.out.println("STARTING");
-        while (true)
+        while(true)
         {
             try
             {
                 /*** beginning of main loop ***/
-                while (myRC.isMovementActive())
-                {
-                    myRC.yield();
-                }
                 boolean hasWout = false;;
                 Robot[] nbrs = myRC.senseNearbyGroundRobots();
                 for(Robot r : nbrs)
@@ -50,14 +46,16 @@ public class ArchonPlayer implements BasePlayer
                 {
                     myRC.spawn(RobotType.WOUT);
                 }
-                else if (myRC.canMove(myRC.getDirection()))
-                {
-                    System.out.println("about to move");
-                    myRC.moveForward();
-                }
-                else
-                {
-                    myRC.setDirection(myRC.getDirection().rotateRight());
+                else if (!myRC.isMovementActive()){
+                    if (myRC.canMove(myRC.getDirection()))
+                    {
+                        System.out.println("about to move");
+                        myRC.moveForward();
+                    }
+                    else
+                    {
+                        myRC.setDirection(myRC.getDirection().rotateRight());
+                    }
                 }
                 myRC.yield();
 
