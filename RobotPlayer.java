@@ -14,22 +14,22 @@ public class RobotPlayer implements Runnable
             player = new ArchonPlayer(rc);
             break;
         case AURA:
-            System.out.println("No aura yet");
+            player = new AuraPlayer(rc);
             break;
         case CHAINER:
-            System.out.println("No chainer yet");
+            player = new ChainerPlayer(rc);
             break;
         case COMM:
-            System.out.println("No comm. tower yet");
+            player = new CommPlayer(rc);
             break;
         case SOLDIER:
-            System.out.println("No Soldiers yet");
+            player = new SoldierPlayer(rc);
             break;
         case TELEPORTER:
-            System.out.println("No teleporter yet");
+            player = new TeleporterPlayer(rc);
             break;
         case TURRET:
-            System.out.println("No Turrets yet");
+            player = new TurretPlayer(rc);
             break;
         case WOUT:
             player = new WoutPlayer(rc);
