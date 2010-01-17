@@ -58,7 +58,7 @@ public class WoutPlayer implements BasePlayer
                                 }
                             }
                         }
-                        if(minArch==null){
+                        while(minArch==null){
                             //we've lost
                             myRC.yield();
                         }
