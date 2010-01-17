@@ -17,7 +17,7 @@ public class ArchonPlayer extends BasePlayer
         return behavior;
     }
 
-    protected void sobileCreateTerritory(Object[] state) throws GameActionException
+    protected void mobileCreateTerritory(Object[] state) throws GameActionException
     {
         /*** beginning of main loop ***/
         boolean hasWout = false;
