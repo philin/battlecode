@@ -34,10 +34,10 @@ public class ArchonPlayer implements BasePlayer
                     if(info.location.distanceSquaredTo(myRC.getLocation()) <= 2 &&
                        info.type == RobotType.WOUT && info.team.equals(myRC.getTeam()))
                     {
-                        double maxTransfer = info.maxEnergon - info.eventualEnergon;
+                        double maxTransfer = Math.min(info.maxEnergon - info.eventualEnergon,1);
                         if(maxTransfer < myRC.getEnergonLevel())
                         {
-                            myRC.transferUnitEnergon(1, info.location, RobotLevel.ON_GROUND);
+                            myRC.transferUnitEnergon(maxTransfer, info.location, RobotLevel.ON_GROUND);
                         }
                     }
                 }
