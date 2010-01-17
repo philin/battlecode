@@ -26,6 +26,7 @@ public class ArchonPlayer implements BasePlayer
                 {
                     myRC.yield();
                 }
+                boolean hasWout = false;;
                 Robot[] nbrs = myRC.senseNearbyGroundRobots();
                 for(Robot r : nbrs)
                 {
@@ -34,6 +35,7 @@ public class ArchonPlayer implements BasePlayer
                     if(info.location.distanceSquaredTo(myRC.getLocation()) <= 2 &&
                        info.type == RobotType.WOUT && info.team.equals(myRC.getTeam()))
                     {
+                        hasWout=true;
                         double maxTransfer = Math.min(info.maxEnergon - info.eventualEnergon,1);
                         if(maxTransfer < myRC.getEnergonLevel())
                         {
@@ -44,10 +46,10 @@ public class ArchonPlayer implements BasePlayer
                 MapLocation spawnLoc  = myRC.getLocation().add(myRC.getDirection());
                 if(myRC.getEnergonLevel() > RobotType.WOUT.spawnCost() &&
                    myRC.senseTerrainTile(spawnLoc).getType() == TerrainTile.TerrainType.LAND &&
-                   myRC.senseGroundRobotAtLocation(spawnLoc) == null)
+                   myRC.senseGroundRobotAtLocation(spawnLoc) == null && !hasWout)
                 {
                     myRC.spawn(RobotType.WOUT);
-                        }
+                }
                 else if (myRC.canMove(myRC.getDirection()))
                 {
                     System.out.println("about to move");
