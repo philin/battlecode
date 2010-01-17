@@ -13,8 +13,4 @@ public class TeleporterPlayer extends BuildingPlayer
     {
         return b;
     }
-
-    public void runPlayer() throws GameActionException
-    {
-    }
 }

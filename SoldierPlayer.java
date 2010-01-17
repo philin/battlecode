@@ -13,9 +13,4 @@ public class SoldierPlayer extends BasePlayer
     {
         return b;
     }
-
-    public void runPlayer() throws GameActionException
-    {
-    }
-
 }

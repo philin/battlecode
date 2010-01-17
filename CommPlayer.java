@@ -13,8 +13,4 @@ public class CommPlayer extends BuildingPlayer
     {
         return b;
     }
-
-    public void runPlayer() throws GameActionException
-    {
-    }
 }

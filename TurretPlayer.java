@@ -13,9 +13,4 @@ public class TurretPlayer extends BasePlayer
     {
         return b;
     }
-
-    public void runPlayer() throws GameActionException
-    {
-    }
-
 }

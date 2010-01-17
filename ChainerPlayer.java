@@ -13,10 +13,4 @@ public class ChainerPlayer extends BasePlayer
     {
         return b;
     }
-
-    public void runPlayer() throws GameActionException
-    {
-    }
-
-
 }
