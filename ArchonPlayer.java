@@ -10,14 +10,14 @@ public class ArchonPlayer extends BasePlayer
         super(rc);
     }
 
-    protected Behavior SelectBehavior(Behavior oldBehavior)
+    protected Behavior selectBehavior(Behavior oldBehavior)
     {
         Behavior behavior = new Behavior(Behavior.BehaviorType.MOBILE_CREATE_TERRITORY,
                                          null);
         return behavior;
     }
 
-    protected void MobileCreateTerritory(Object[] state) throws GameActionException
+    protected void sobileCreateTerritory(Object[] state) throws GameActionException
     {
         /*** beginning of main loop ***/
         boolean hasWout = false;
@@ -30,18 +30,18 @@ public class ArchonPlayer extends BasePlayer
                info.type == RobotType.WOUT && info.team.equals(myRC.getTeam()))
             {
                 hasWout=true;
-                double maxTransfer = Math.min(info.maxEnergon - 
+                double maxTransfer = Math.min(info.maxEnergon -
                                               info.eventualEnergon,1);
                 if(maxTransfer < myRC.getEnergonLevel())
                 {
-                    myRC.transferUnitEnergon(maxTransfer, info.location, 
+                    myRC.transferUnitEnergon(maxTransfer, info.location,
                                              RobotLevel.ON_GROUND);
                 }
             }
         }
         MapLocation spawnLoc  = myRC.getLocation().add(myRC.getDirection());
         if(myRC.getEnergonLevel() > RobotType.WOUT.spawnCost() &&
-           myRC.senseTerrainTile(spawnLoc).getType() == 
+           myRC.senseTerrainTile(spawnLoc).getType() ==
            TerrainTile.TerrainType.LAND &&
            myRC.senseGroundRobotAtLocation(spawnLoc) == null && !hasWout)
         {
@@ -58,6 +58,6 @@ public class ArchonPlayer extends BasePlayer
             {
                 myRC.setDirection(myRC.getDirection().rotateRight());
             }
-        }     
+        }
     }
 }

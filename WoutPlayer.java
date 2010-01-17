@@ -12,7 +12,7 @@ public class WoutPlayer extends BasePlayer
         super(rc);
     }
 
-    protected Behavior SelectBehavior(Behavior oldBehavior)
+    protected Behavior selectBehavior(Behavior oldBehavior)
     {
         Behavior behavior = new Behavior(Behavior.BehaviorType.WOUT_COLLECT_FLUX,
                                          null);
@@ -32,7 +32,7 @@ public class WoutPlayer extends BasePlayer
         }
     }
 
-    protected void WoutCollectFlux(Object[] state) throws GameActionException
+    protected void woutCollectFlux(Object[] state) throws GameActionException
     {
         MapLocation loc = myRC.getLocation();
         Direction currDir = myRC.getDirection();
