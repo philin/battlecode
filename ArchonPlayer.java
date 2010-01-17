@@ -5,6 +5,8 @@ import static battlecode.common.GameConstants.*;
 
 public class ArchonPlayer extends BasePlayer
 {
+    protected double MIN_ENERGON = 30.0;
+
     public ArchonPlayer(RobotController rc)
     {
         super(rc);
@@ -24,7 +26,6 @@ public class ArchonPlayer extends BasePlayer
         Robot[] nbrs = myRC.senseNearbyGroundRobots();
         for(Robot r : nbrs)
         {
-
             RobotInfo info = myRC.senseRobotInfo(r);
             if(info.location.distanceSquaredTo(myRC.getLocation()) <= 2 &&
                info.type == RobotType.WOUT && info.team.equals(myRC.getTeam()))
@@ -32,7 +33,8 @@ public class ArchonPlayer extends BasePlayer
                 hasWout=true;
                 double maxTransfer = Math.min(info.maxEnergon -
                                               info.eventualEnergon,1);
-                if(maxTransfer < myRC.getEnergonLevel())
+                if(maxTransfer < myRC.getEnergonLevel() &&
+                   myRC.getEnergonLevel() > MIN_ENERGON)
                 {
                     myRC.transferUnitEnergon(maxTransfer, info.location,
                                              RobotLevel.ON_GROUND);
@@ -40,7 +42,7 @@ public class ArchonPlayer extends BasePlayer
             }
         }
         MapLocation spawnLoc  = myRC.getLocation().add(myRC.getDirection());
-        if(myRC.getEnergonLevel() > RobotType.WOUT.spawnCost() &&
+        if(myRC.getEnergonLevel() > MIN_ENERGON &&
            myRC.senseTerrainTile(spawnLoc).getType() ==
            TerrainTile.TerrainType.LAND &&
            myRC.senseGroundRobotAtLocation(spawnLoc) == null && !hasWout)
