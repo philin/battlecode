@@ -5,14 +5,15 @@ import static battlecode.common.GameConstants.*;
 
 public class WoutPlayer extends BasePlayer
 {
-    private final RobotController myRC;
-    private final Team team;//safely assume this does not change
     private static final double ARCHON_FIND_THRESHOLD=10;
 
     public WoutPlayer(RobotController rc)
     {
-        myRC = rc;
-        team = rc.getTeam();
+        super(rc);
+    }
+
+    public void runPlayer() throws GameActionException
+    {
     }
 
     public void tryMoveForward() throws GameActionException

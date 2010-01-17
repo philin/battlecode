@@ -7,11 +7,13 @@ import static battlecode.common.GameConstants.*;
 public class ArchonPlayer extends BasePlayer
 {
 
-    private final RobotController myRC;
-
     public ArchonPlayer(RobotController rc)
     {
-        myRC = rc;
+        super(rc);
+    }
+
+    public void runPlayer() throws GameActionException
+    {
     }
 
     public void run()
