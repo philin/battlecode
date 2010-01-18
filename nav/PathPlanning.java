@@ -6,6 +6,7 @@ import java.util.Random;
 
 public class PathPlanning
 {
+    RobotController rc;
     static Random rand = new Random();
     public static class FollowArchon extends MovementAction
     {
@@ -25,7 +26,8 @@ public class PathPlanning
             return done;
         }
 
-        public Direction getNextDirection(RobotState state) throws GameActionException
+        public Direction getNextDirection(RobotState state)
+            throws GameActionException
         {
             MapLocation minArch=null;
             double minDistSquared=0;
@@ -164,6 +166,18 @@ public class PathPlanning
 
     }
 
-    public PathPlanning(){
+    public PathPlanning(RobotController rc)
+    {
+        this.rc = rc;
+    }
+
+    public MovementAction getFollowArchon()
+    {
+        return new MovementAction(rc);
+    }
+
+    public MovementAction getBasicMove()
+    {
+        return null;
     }
 }
