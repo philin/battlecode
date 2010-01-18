@@ -2,7 +2,7 @@ package team338;
 
 import battlecode.common.*;
 
-abstract class MovementAction extends Action
+abstract public class MovementAction extends Action
 {
     public MovementAction(double myPriority)
     {

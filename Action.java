@@ -2,7 +2,7 @@ package team338;
 
 import battlecode.common.*;
 
-abstract class Action
+abstract public class Action
 {
     public Action(double myPriority)
     {
