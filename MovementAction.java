@@ -9,17 +9,18 @@ abstract public class MovementAction extends Action
         super(myPriority);
     }
 
-    public void run(RobotController rc) throws GameActionException
+    public void run(RobotState state, RobotController rc)
+        throws GameActionException
     {
         if(!rc.isMovementActive())
         {
-            Direction desiredDir = getNextDirection();
-            if(rc.getDirection() != desiredDir)
+            Direction desiredDir = getNextDirection(state);
+            if(state.d != desiredDir)
                 rc.setDirection(desiredDir);
             else
                 rc.moveForward();
         }
     }
 
-    abstract protected Direction getNextDirection();
+    abstract protected Direction getNextDirection(RobotState state);
 }

@@ -14,7 +14,9 @@ abstract public class Action
         return priority * getBasePriority();
     }
 
-    abstract public void run(RobotController rc) throws GameActionException;
+    abstract public void run(RobotState state, RobotController rc)
+        throws GameActionException;
+
     abstract protected double getBasePriority();
     abstract protected boolean isDone();
 

@@ -15,11 +15,12 @@ abstract public class AttackAction extends Action
         MapLocation loc;
     }
 
-    public void run(RobotController rc) throws GameActionException
+    public void run(RobotState state, RobotController rc)
+        throws GameActionException
     {
         if(!rc.isAttackActive())
         {
-            AttackState as = getNextAttackState();
+            AttackState as = getNextAttackState(state);
             switch(as.level)
             {
             case IN_AIR:
@@ -32,5 +33,5 @@ abstract public class AttackAction extends Action
         }
     }
 
-    abstract protected AttackState getNextAttackState();
+    abstract protected AttackState getNextAttackState(RobotState state);
 }
