@@ -32,6 +32,5 @@ abstract public class AttackAction extends Action
         }
     }
 
-    abstract protected double getBasePriority();
     abstract protected AttackState getNextAttackState();
 }

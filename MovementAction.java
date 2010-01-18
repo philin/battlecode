@@ -21,6 +21,5 @@ abstract public class MovementAction extends Action
         }
     }
 
-    abstract protected double getBasePriority();
     abstract protected Direction getNextDirection();
 }
