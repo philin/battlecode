@@ -15,13 +15,13 @@ abstract public class AttackAction extends Action
         if(!rc.isAttackActive())
         {
             Action.RobotLocation rl = getNextRobotLocation(state);
-            switch(as.level)
+            switch(rl.level)
             {
             case IN_AIR:
-                rc.attackAir(as.loc);
+                rc.attackAir(rl.loc);
                 break;
             case ON_GROUND:
-                rc.attackGround(as.loc);
+                rc.attackGround(rl.loc);
                 break;
             }
         }
