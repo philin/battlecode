@@ -15,6 +15,8 @@ abstract public class MovementAction extends Action
         if(!rc.isMovementActive())
         {
             Direction desiredDir = getNextDirection(state);
+            if(desiredDir == null)
+                return;
             if(state.d != desiredDir)
                 rc.setDirection(desiredDir);
             else
@@ -22,5 +24,6 @@ abstract public class MovementAction extends Action
         }
     }
 
-    abstract protected Direction getNextDirection(RobotState state);
+    abstract protected Direction getNextDirection(RobotState state)
+        throws GameActionException;
 }
