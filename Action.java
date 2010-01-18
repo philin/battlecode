@@ -18,6 +18,18 @@ abstract public class Action
     {
         RobotLevel level;
         MapLocation loc;
+        RobotInfo senseLocation(RobotController rc) throws GameActionException
+        {
+            switch(level)
+            {
+            case ON_GROUND:
+                return rc.senseRobotInfo(rc.senseGroundRobotAtLocation(loc));
+            case IN_AIR:
+                return rc.senseRobotInfo(rc.senseAirRobotAtLocation(loc));
+            default:
+                return null;
+            }
+        }
     }
 
     abstract public void run(RobotState state, RobotController rc)
