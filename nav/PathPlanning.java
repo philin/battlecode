@@ -194,6 +194,10 @@ public class PathPlanning
                     Direction dir = state.d.rotateRight();
                     while(!rc.canMove(dir)){
                         dir = dir.rotateRight();
+                        if(dir==state.d){
+                            //careful we can't move but we are still doing stuff
+                            return null;
+                        }
                     }
                     return dir;
                 }
@@ -202,6 +206,10 @@ public class PathPlanning
                     Direction dir = state.d.rotateLeft();
                     while(!rc.canMove(dir)){
                         dir = dir.rotateLeft();
+                        if(dir==state.d){
+                            //careful we can't move but we are still doing stuff
+                            return null;
+                        }
                     }
                     return dir;
                 }
