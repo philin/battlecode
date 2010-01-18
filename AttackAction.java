@@ -9,18 +9,12 @@ abstract public class AttackAction extends Action
         super(myPriority);
     }
 
-    static class AttackState
-    {
-        RobotLevel level;
-        MapLocation loc;
-    }
-
     public void run(RobotState state, RobotController rc)
         throws GameActionException
     {
         if(!rc.isAttackActive())
         {
-            AttackState as = getNextAttackState(state);
+            Action.RobotLocation rl = getNextRobotLocation(state);
             switch(as.level)
             {
             case IN_AIR:
@@ -33,5 +27,5 @@ abstract public class AttackAction extends Action
         }
     }
 
-    abstract protected AttackState getNextAttackState(RobotState state);
+    abstract protected Action.RobotLocation getNextRobotLocation(RobotState state);
 }

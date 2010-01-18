@@ -14,6 +14,12 @@ abstract public class Action
         return priority * getBasePriority();
     }
 
+    static protected class RobotLocation
+    {
+        RobotLevel level;
+        MapLocation loc;
+    }
+
     abstract public void run(RobotState state, RobotController rc)
         throws GameActionException;
 
