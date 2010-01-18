@@ -4,8 +4,8 @@ import battlecode.common.*;
 
 public class RobotState
 {
-    final MapLocation loc;
-    final Direction d;
+    public final MapLocation loc;
+    public final Direction d;
 
     public RobotState()
     {
