@@ -1,7 +1,7 @@
 package team338;
 
 import battlecode.common.*;
-
+import java.util.Random;
 abstract class BasePlayer implements Runnable
 {
     private Behavior oldBehavior;
@@ -10,6 +10,7 @@ abstract class BasePlayer implements Runnable
     protected MapLocation location;
     protected Direction direction;
     protected final Team team;//safely assume this does not change
+    protected static Random r = new Random();
 
     private BasePlayer()
     {
