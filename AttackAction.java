@@ -15,6 +15,8 @@ abstract public class AttackAction extends Action
         if(!rc.isAttackActive())
         {
             Action.RobotLocation rl = getNextRobotLocation(state);
+            if(rl == null)
+                return;
             switch(rl.level)
             {
             case IN_AIR:
@@ -27,5 +29,6 @@ abstract public class AttackAction extends Action
         }
     }
 
-    abstract protected Action.RobotLocation getNextRobotLocation(RobotState state);
+    abstract protected RobotLocation getNextRobotLocation(RobotState state)
+        throws GameActionException;
 }
