@@ -163,7 +163,51 @@ public class PathPlanning
         {
             return 1;
         }
+    }
 
+    //move forward if possible otherwise turn randomly
+    public static class BasicMovement extends MovementAction
+    {
+        RobotController rc;
+        public BasicMovement(RobotController rc)
+        {
+            super(1);
+            this.rc = rc;
+        }
+        public boolean isDone()
+        {
+            return false;
+        }
+        public double getBasePriority()
+        {
+            return .5;
+        }
+        public Direction getNextDirection(RobotState state)
+        {
+            if(rc.canMove(state.d))
+            {
+                return state.d;
+            }
+            else{
+                if(rand.nextInt(2)==0)
+                {
+                    Direction dir = state.d.rotateRight();
+                    while(!rc.canMove(dir)){
+                        dir = dir.rotateRight();
+                    }
+                    return dir;
+                }
+                else
+                {
+                    Direction dir = state.d.rotateLeft();
+                    while(!rc.canMove(dir)){
+                        dir = dir.rotateLeft();
+                    }
+                    return dir;
+                }
+
+            }
+        }
     }
 
     public PathPlanning(RobotController rc)
@@ -173,11 +217,11 @@ public class PathPlanning
 
     public MovementAction getFollowArchon()
     {
-        return new MovementAction(rc);
+        return new FollowArchon(rc);
     }
 
-    public MovementAction getBasicMove()
+    public MovementAction getBasicMovement()
     {
-        return null;
+        return new BasicMovement(rc);
     }
 }
