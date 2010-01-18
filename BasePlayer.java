@@ -7,8 +7,7 @@ abstract class BasePlayer implements Runnable
     private Behavior oldBehavior;
 
     protected final RobotController myRC;
-    protected MapLocation location;
-    protected Direction direction;
+    protected RobotState state;
     protected final Team team;//safely assume this does not change
     protected static Random r = new Random();
 
@@ -46,8 +45,7 @@ abstract class BasePlayer implements Runnable
             {
                 while(true)
                 {
-                    location = myRC.getLocation();
-                    direction = myRC.getDirection();
+                    state = new RobotState(myRC.getLocation(),myRC.getDirection());
                     Behavior behavior = selectBehavior(oldBehavior);
                     switch(behavior.type)
                     {
