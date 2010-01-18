@@ -4,20 +4,20 @@ import battlecode.common.*;
 import java.util.Random;
 public class SoldierPlayer extends BasePlayer
 {
-   
+
     public SoldierPlayer(RobotController rc)
     {
         super(rc);
     }
-    
+
     public Behavior selectBehavior(Behavior b)
     {
         Behavior behavior = new Behavior(Behavior.BehaviorType.MOBILE_ATTACK_UNIT,
                                          null);
         return behavior;
-        
+
     }
-        
+
     public void tryMoveForward() throws GameActionException
     {
         if(myRC.canMove(myRC.getDirection()))
@@ -38,14 +38,14 @@ public class SoldierPlayer extends BasePlayer
                 case (1):
                 {
                     myRC.setDirection(myRC.getDirection().rotateLeft());
-                    break; 
+                    break;
                 }
                 case (2):
                 {
                     myRC.setDirection(myRC.getDirection().opposite());
                     break;
                 }
-            } 
+            }
         }
     }
 
@@ -115,20 +115,17 @@ public class SoldierPlayer extends BasePlayer
         else if (!myRC.isAttackActive())
         {
             //do an attack if possible
-            Direction dir = currDir;
+            Direction dir = currDir.rotateLeft().rotateLeft();
             Robot currTarget = null;
             RobotInfo currRi = null;
-            do
+            for(int i=0;i<5;i++)
             {
                 MapLocation l = loc.add(dir);
                 Robot g = myRC.senseGroundRobotAtLocation(loc.add(dir));
-                RobotInfo ri = myRC.senseRobotInfo(g);
-                Robot a = myRC.senseAirRobotAtLocation(loc.add(dir));
-                RobotInfo airRi =  myRC.senseRobotInfo(a);
-                if (ri.team!=team)
+                if (g!= null)
                 {
-                    //enemy
-                    if(g != null)
+                    RobotInfo ri = myRC.senseRobotInfo(g);
+                    if (ri.team!=team)
                     {
                         if(currTarget == null || ri.type.isBuilding())
                         {
@@ -137,12 +134,12 @@ public class SoldierPlayer extends BasePlayer
                         }
                     }
                 }
-                
-                if(airRi.team != team)
-                {
-                
-                    if (a!=null)
+                Robot a = myRC.senseAirRobotAtLocation(loc.add(dir));
+                if(a!=null){
+                    RobotInfo airRi =  myRC.senseRobotInfo(a);
+                    if(airRi.team != team)
                     {
+
                         //enemy
                         if(currTarget == null)
                         {
@@ -152,8 +149,8 @@ public class SoldierPlayer extends BasePlayer
                     }
                 }
                 dir = dir.rotateRight();
-            }while (dir!=currDir);
-            
+            };
+
             if(currTarget != null)
                 if(currRi.type.isAirborne())
                 {
@@ -162,14 +159,14 @@ public class SoldierPlayer extends BasePlayer
                 else
                 {
                     myRC.attackGround(currRi.location);
-                    
+
                 }
-            
+
         }
     }
-           
+
 }
 
 
-    
+
 

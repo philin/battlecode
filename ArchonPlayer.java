@@ -18,6 +18,7 @@ public class ArchonPlayer extends BasePlayer
                                          null);
         return behavior;
     }
+    boolean spawnSoldier=false;
 
     protected void mobileCreateTerritory(Object[] state) throws GameActionException
     {
@@ -28,7 +29,7 @@ public class ArchonPlayer extends BasePlayer
         {
             RobotInfo info = myRC.senseRobotInfo(r);
             if(info.location.distanceSquaredTo(myRC.getLocation()) <= 2 &&
-               info.type == RobotType.WOUT && info.team.equals(myRC.getTeam()))
+               info.type != RobotType.ARCHON && info.team.equals(myRC.getTeam()))
             {
                 hasWout=true;
                 double maxTransfer = Math.min(info.maxEnergon -
@@ -47,7 +48,16 @@ public class ArchonPlayer extends BasePlayer
            TerrainTile.TerrainType.LAND &&
            myRC.senseGroundRobotAtLocation(spawnLoc) == null && !hasWout)
         {
-            myRC.spawn(RobotType.WOUT);
+            if(spawnSoldier)
+            {
+                myRC.spawn(RobotType.SOLDIER);
+                spawnSoldier=false;
+            }
+            else
+            {
+                myRC.spawn(RobotType.WOUT);
+                spawnSoldier=true;
+            }
         }
         else if (!myRC.isMovementActive())
         {
