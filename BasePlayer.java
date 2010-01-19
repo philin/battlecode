@@ -48,8 +48,13 @@ abstract class BasePlayer implements Runnable
             {
                 while(true)
                 {
+                    //calculate current state
                     state = new RobotState(myRC.getLocation(),myRC.getDirection());
+
+                    //select desired behavior
                     Behavior behavior = selectBehavior(oldBehavior);
+
+                    //run behavior: select actions
                     switch(behavior.type)
                     {
                     case MOBILE_DEFEND_TERRITORY:
@@ -66,8 +71,10 @@ abstract class BasePlayer implements Runnable
                         break;
                     }
 
+                    //perform actions
                     scheduler.run(state, myRC);
 
+                    //cleanup and end turn
                     oldBehavior = behavior;
                     myRC.yield();
                 }
