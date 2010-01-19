@@ -1,11 +1,11 @@
 package team338;
 import battlecode.common.*;
 
-public class SimpleAttack extends AttackAction
+public class SimpleAttackAction extends AttackAction
 {
     RobotController myRC;
     Team team;
-    public SimpleAttack(RobotController rc, double myPriority)
+    public SimpleAttackAction(RobotController rc, double myPriority)
     {
         super(myPriority);
         myRC = rc;
