@@ -2,14 +2,17 @@ package team338;
 
 import battlecode.common.*;
 import java.util.Random;
+
 abstract class BasePlayer implements Runnable
 {
     private Behavior oldBehavior;
 
     protected final RobotController myRC;
-    protected RobotState state;
     protected final Team team;//safely assume this does not change
     protected static Random r = new Random();
+
+    protected RobotState state;
+    protected ActionScheduler scheduler;
 
     private BasePlayer()
     {
@@ -62,6 +65,9 @@ abstract class BasePlayer implements Runnable
                         woutCollectFlux(behavior.state);
                         break;
                     }
+
+                    scheduler.run(state, myRC);
+
                     oldBehavior = behavior;
                     myRC.yield();
                 }
