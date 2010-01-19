@@ -7,10 +7,18 @@ public class WoutPlayer extends BasePlayer
 {
     private static final double ARCHON_FIND_THRESHOLD=10;
 
+    protected Action exploreAction;
+    protected Action returnToArchonAction;
+
     public WoutPlayer(RobotController rc)
     {
         super(rc);
-        scheduler.addAction(nav.getBasicMovement());
+        exploreAction = nav.getBasicMovement();
+        returnToArchonAction = nav.getFollowArchon();
+
+        //scheduler.addAction(returnToArchonAction);
+        scheduler.addAction(exploreAction);
+        scheduler.addAction(new SimpleAttackAction(rc, 1.0));
     }
 
     protected Behavior selectBehavior(Behavior oldBehavior)
