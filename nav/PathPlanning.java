@@ -115,14 +115,15 @@ public class PathPlanning
                         }
                         d = state.d.rotateLeft();
                     }
-                    while(rc.canMove(d))
+                    for(int i=0;i<6;i++)
                     {
-                        if(d==archDir)
-                        {
-                            isTracing=false;
+                        if(rc.canMove(d)){
+                            if(d==archDir){
+                                isTracing = false;
+                            }
                             return d;
                         }
-                        else if(turnLeft)
+                        if(turnLeft)
                         {
                             d = d.rotateRight();
                         }
@@ -131,14 +132,8 @@ public class PathPlanning
                             d = d.rotateLeft();
                         }
                     }
-                    if(turnLeft)
-                    {
-                        return d.rotateLeft();
-                    }
-                    else
-                    {
-                        return d.rotateRight();
-                    }
+                    //no path out, wait a while
+                    return null;
                 }
             }
             else if(rc.canMove(archDir))
