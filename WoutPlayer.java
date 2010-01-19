@@ -10,6 +10,7 @@ public class WoutPlayer extends BasePlayer
     public WoutPlayer(RobotController rc)
     {
         super(rc);
+        scheduler.addAction(nav.getBasicMovement());
     }
 
     protected Behavior selectBehavior(Behavior oldBehavior)
@@ -34,7 +35,7 @@ public class WoutPlayer extends BasePlayer
 
     protected void woutCollectFlux(Object[] state) throws GameActionException
     {
-        MapLocation loc = myRC.getLocation();
+        /*MapLocation loc = myRC.getLocation();
         Direction currDir = myRC.getDirection();
         MapLocation minArch = null;
         int minDistSquared=-1;
@@ -128,6 +129,6 @@ public class WoutPlayer extends BasePlayer
                 dir = dir.rotateRight();
             }while (dir!=currDir);
         }
-
+        */
     }
 }

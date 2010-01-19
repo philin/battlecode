@@ -13,6 +13,7 @@ abstract class BasePlayer implements Runnable
 
     protected RobotState state;
     protected ActionScheduler scheduler;
+    protected team338.nav.PathPlanning nav;
 
     private BasePlayer()
     {
@@ -20,6 +21,10 @@ abstract class BasePlayer implements Runnable
         myRC = null;
         team = null;
         oldBehavior = null;
+
+        state = null;
+        scheduler = null;
+        nav = null;
     }
 
     public BasePlayer(RobotController rc)
@@ -27,6 +32,9 @@ abstract class BasePlayer implements Runnable
         myRC = rc;
         team = myRC.getTeam();
         oldBehavior = null;
+
+        scheduler = new ActionScheduler();
+        nav = new team338.nav.PathPlanning(rc);
     }
 
     protected abstract Behavior selectBehavior(Behavior oldBehavior);
