@@ -21,15 +21,21 @@ public class ActionScheduler
         allActions.clear();
     }
 
+    public int numActions()
+    {
+        return allActions.size();
+    }
+
     public void run(RobotState state, RobotController rc)
         throws GameActionException
     {
         if(allActions.size() == 0)
             return;
         Action toRun;
-        if(!current.hasNext())
-            current = allActions.iterator();
-        toRun = current.next();
+        do
+        {
+            toRun = getNextAction();
+        } while(!toRun.canAct());
         toRun.run(state, rc);
         if(toRun.isDone())
         {
@@ -37,6 +43,13 @@ public class ActionScheduler
         }
     }
 
+    private Action getNextAction()
+    {
+        if(!current.hasNext())
+            current = allActions.iterator();
+        return current.next();
+    }
+
     private ArrayList<Action> allActions;
-    Iterator<Action> current;
+    private Iterator<Action> current;
 }

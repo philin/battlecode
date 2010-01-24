@@ -34,6 +34,11 @@ public class SimpleAttackAction extends AttackAction
         return false;
     }
 
+    protected boolean canAct() throws GameActionException
+    {
+        return (getTargetInRange() != null);
+    }
+
     protected double getBasePriority()
     {
         return 1;

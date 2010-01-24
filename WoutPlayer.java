@@ -16,8 +16,8 @@ public class WoutPlayer extends BasePlayer
         exploreAction = nav.getBasicMovement();
         returnToArchonAction = nav.getFollowArchon();
 
-        //scheduler.addAction(returnToArchonAction);
-        scheduler.addAction(exploreAction);
+        scheduler.addAction(returnToArchonAction);
+        //scheduler.addAction(exploreAction);
         scheduler.addAction(new SimpleAttackAction(rc, 1.0));
     }
 
@@ -43,6 +43,11 @@ public class WoutPlayer extends BasePlayer
 
     protected void woutCollectFlux(Object[] state) throws GameActionException
     {
+        if(scheduler.numActions() == 1)
+        {
+            returnToArchonAction = nav.getFollowArchon();
+            scheduler.addAction(returnToArchonAction);
+        }
         /*MapLocation loc = myRC.getLocation();
         Direction currDir = myRC.getDirection();
         MapLocation minArch = null;

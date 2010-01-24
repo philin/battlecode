@@ -158,6 +158,11 @@ public class PathPlanning
         {
             return 1;
         }
+
+        protected boolean canAct()
+        {
+            return true;
+        }
     }
 
     //move forward if possible otherwise turn randomly
@@ -208,8 +213,12 @@ public class PathPlanning
                     }
                     return dir;
                 }
-
             }
+        }
+
+        protected boolean canAct()
+        {
+            return true;
         }
     }
 
