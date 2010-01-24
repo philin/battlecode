@@ -140,17 +140,31 @@ public class PathPlanning
             {
                 return archDir;
             }
-            else if(rand.nextInt(2)==0)
-            {
-                isTracing=true;
-                turnLeft=false;
-                return state.d.rotateRight();
-            }
             else
             {
-                isTracing=true;
-                turnLeft=true;
-                return state.d.rotateLeft();
+                isTracing = true;
+                Robot robot
+                    = rc.senseGroundRobotAtLocation(state.loc.add(state.d));
+                if(robot!=null)
+                {
+                    RobotInfo info = rc.senseRobotInfo(robot);
+                    if(info.type.isBuilding())
+                    {
+                        //mobile robot, no need to trace
+                        isTracing = false;
+                    }
+                }
+
+                if(rand.nextInt(2)==0)
+                {
+                    turnLeft=false;
+                    return state.d.rotateRight();
+                }
+                else
+                {
+                    turnLeft=true;
+                    return state.d.rotateLeft();
+                }
             }
         }
 
