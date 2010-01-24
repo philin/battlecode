@@ -37,6 +37,7 @@ abstract public class Action
 
     abstract protected double getBasePriority();
     abstract protected boolean isDone();
+    abstract protected boolean canAct() throws GameActionException;
 
     private final double priority;
 }

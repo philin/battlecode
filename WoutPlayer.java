@@ -7,9 +7,18 @@ public class WoutPlayer extends BasePlayer
 {
     private static final double ARCHON_FIND_THRESHOLD=10;
 
+    protected Action exploreAction;
+    protected Action returnToArchonAction;
+
     public WoutPlayer(RobotController rc)
     {
         super(rc);
+        exploreAction = nav.getBasicMovement();
+        returnToArchonAction = nav.getFollowArchon();
+
+        scheduler.addAction(returnToArchonAction);
+        //scheduler.addAction(exploreAction);
+        scheduler.addAction(new SimpleAttackAction(rc, 1.0));
     }
 
     protected Behavior selectBehavior(Behavior oldBehavior)
@@ -34,7 +43,12 @@ public class WoutPlayer extends BasePlayer
 
     protected void woutCollectFlux(Object[] state) throws GameActionException
     {
-        MapLocation loc = myRC.getLocation();
+        if(scheduler.numActions() == 1)
+        {
+            returnToArchonAction = nav.getFollowArchon();
+            scheduler.addAction(returnToArchonAction);
+        }
+        /*MapLocation loc = myRC.getLocation();
         Direction currDir = myRC.getDirection();
         MapLocation minArch = null;
         int minDistSquared=-1;
@@ -128,6 +142,6 @@ public class WoutPlayer extends BasePlayer
                 dir = dir.rotateRight();
             }while (dir!=currDir);
         }
-
+        */
     }
 }

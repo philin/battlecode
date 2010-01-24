@@ -15,16 +15,28 @@ public class SimpleAttackAction extends AttackAction
     protected RobotLocation getNextRobotLocation(RobotState state)
         throws GameActionException
     {
-        Robot target = null;
+        Robot target = getTargetInRange();
         RobotLocation as = new RobotLocation();
-        RobotInfo ri= myRC.senseRobotInfo(target);
-        as.level = target.getRobotLevel();
-        as.loc = ri.location;
-        return as;
+        if(target != null)
+        {
+            RobotInfo ri= myRC.senseRobotInfo(target);
+            as.level = target.getRobotLevel();
+            as.loc = ri.location;
+            return as;
+        }
+        else
+        {
+            return null;
+        }
     }
     protected boolean isDone()
     {
         return false;
+    }
+
+    protected boolean canAct() throws GameActionException
+    {
+        return (getTargetInRange() != null);
     }
 
     protected double getBasePriority()
@@ -118,7 +130,6 @@ public class SimpleAttackAction extends AttackAction
         else
         {
             Robot a = myRC.senseAirRobotAtLocation(loc.add(dir));
-            RobotInfo riAir = myRC.senseRobotInfo(a);
             if (a!=null)
             {
                 if (myRC.senseRobotInfo(a).team!=team)
