@@ -175,7 +175,7 @@ public class PathPlanning
 
         protected boolean canAct()
         {
-            return true;
+            return !rc.isMovementActive();
         }
     }
 
@@ -232,7 +232,7 @@ public class PathPlanning
 
         protected boolean canAct()
         {
-            return true;
+            return !rc.isMovementActive();
         }
     }
 
