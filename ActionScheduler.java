@@ -32,14 +32,17 @@ public class ActionScheduler
         if(allActions.size() == 0)
             return;
         Action toRun;
-        do
+        for(int i=0;i<numActions();i++)
         {
             toRun = getNextAction();
-        } while(!toRun.canAct());
-        toRun.run(state, rc);
-        if(toRun.isDone())
-        {
-            current.remove();
+            if(toRun.canAct()){
+                toRun.run(state, rc);
+                if(toRun.isDone())
+                {
+                    current.remove();
+                }
+                break;
+            }
         }
     }
 
