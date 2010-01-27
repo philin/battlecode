@@ -16,6 +16,13 @@ public class ActionScheduler
         current = allActions.iterator();
     }
 
+    public void removeAction(Action action)
+    {
+        int index = allActions.indexOf(action);
+        if(index != -1)
+            allActions.remove(index);
+    }
+
     public void clearAllActions()
     {
         allActions.clear();
