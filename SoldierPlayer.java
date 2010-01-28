@@ -1,13 +1,25 @@
 package team338;
-
+import team338.nav.*;
 import battlecode.common.*;
 import java.util.Random;
+import static battlecode.common.GameConstants.*;
 public class SoldierPlayer extends BasePlayer
 {
+    private static final double ARCHON_FIND_THRESHOLD=30;
 
+    protected Action exploreAction;
+    protected Action returnToArchonAction;
+
+
+    boolean returning = true;
     public SoldierPlayer(RobotController rc)
     {
         super(rc);
+        exploreAction = nav.getBasicMovement();
+        returnToArchonAction = new Swarm(myRC,nav.getFollowArchon());
+        // scheduler.addAction(new Swarm(myRC,(MovementAction)exploreAction));
+        scheduler.addAction(new GreedyAttackAction(rc, 1.0));
+
     }
 
     public Behavior selectBehavior(Behavior b)
@@ -51,7 +63,22 @@ public class SoldierPlayer extends BasePlayer
 
     protected void mobileAttackUnit(Object[] state) throws GameActionException
     {
-        MapLocation loc = myRC.getLocation();
+        if(myRC.getEnergonLevel()<ARCHON_FIND_THRESHOLD && !returning){
+            returnToArchonAction = nav.getFollowArchon();
+            scheduler.clearAllActions();
+            scheduler.addAction(new GreedyAttackAction(myRC, 1.0));
+            scheduler.addAction(returnToArchonAction);
+        }
+
+        else if(scheduler.numActions() == 1)
+        {
+            exploreAction = new Swarm(myRC,nav.getBasicMovement());
+            scheduler.addAction(exploreAction);
+            //scheduler.addAction(new GreedyAttackAction(myRC, 1.0));
+            // scheduler.addAction(returnToArchonAction);
+        }
+
+        /* MapLocation loc = myRC.getLocation();
         Direction currDir = myRC.getDirection();
         MapLocation minArch = null;
         int minDistSquared=-1;
@@ -163,6 +190,7 @@ public class SoldierPlayer extends BasePlayer
                 }
 
         }
+        */
     }
 
 }

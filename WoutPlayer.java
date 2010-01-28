@@ -10,6 +10,7 @@ public class WoutPlayer extends BasePlayer
 
     protected Action exploreAction;
     protected Action returnToArchonAction;
+
     boolean returning = true;
 
     public WoutPlayer(RobotController rc)
@@ -46,7 +47,7 @@ public class WoutPlayer extends BasePlayer
         if(myRC.getEnergonLevel()<ARCHON_FIND_THRESHOLD && !returning){
             returnToArchonAction = nav.getFollowArchon();
             scheduler.clearAllActions();
-            scheduler.addAction(new SimpleAttackAction(myRC, 1.0));
+            scheduler.addAction(new GreedyAttackAction(myRC, 1.0));
             scheduler.addAction(returnToArchonAction);
         }
         else if(scheduler.numActions() == 1)

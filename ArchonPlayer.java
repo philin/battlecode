@@ -5,7 +5,7 @@ import static battlecode.common.GameConstants.*;
 
 public class ArchonPlayer extends BasePlayer
 {
-    protected double MIN_ENERGON = 30.0;
+    protected double MIN_ENERGON = 35.0;
 
     public ArchonPlayer(RobotController rc)
     {
@@ -18,13 +18,50 @@ public class ArchonPlayer extends BasePlayer
                                          null);
         return behavior;
     }
-    boolean spawnSoldier=false;
+    int spawnSoldierWait=0;
+    public void tryMoveForward() throws GameActionException
+    {
+        if(spawnSoldierWait < 2)
+        {
+            spawnSoldierWait ++;
+            return;
+        }
+        if(myRC.canMove(myRC.getDirection()))
+        {
+            System.out.println("about to move");
+            myRC.moveForward();
+        }
+        else
+        {
+            int dir = r.nextInt()%3;
+            switch (dir)
+            {
+                case (0):
+                {
+                    myRC.setDirection(myRC.getDirection().rotateRight());
+                    break;
+                }
+                case (1):
+                {
+                    myRC.setDirection(myRC.getDirection().rotateLeft());
+                    break;
+                }
+                case (2):
+                {
+                    myRC.setDirection(myRC.getDirection().opposite());
+                    break;
+                }
+            }
+        }
+    }
 
     protected void mobileCreateTerritory(Object[] state) throws GameActionException
     {
         /*** beginning of main loop ***/
         boolean hasWout = false;
         Robot[] nbrs = myRC.senseNearbyGroundRobots();
+
+
         for(Robot r : nbrs)
         {
             RobotInfo info = myRC.senseRobotInfo(r);
@@ -42,25 +79,28 @@ public class ArchonPlayer extends BasePlayer
                 }
             }
         }
+
         MapLocation spawnLoc  = myRC.getLocation().add(myRC.getDirection());
         if(myRC.getEnergonLevel() > MIN_ENERGON &&
            myRC.senseTerrainTile(spawnLoc).getType() ==
            TerrainTile.TerrainType.LAND &&
            myRC.senseGroundRobotAtLocation(spawnLoc) == null && !hasWout)
         {
-            if(spawnSoldier)
+            if(spawnSoldierWait >= 5)
             {
                 myRC.spawn(RobotType.SOLDIER);
-                spawnSoldier=false;
+                spawnSoldierWait=0;
             }
             else
             {
                 myRC.spawn(RobotType.WOUT);
-                spawnSoldier=true;
+                spawnSoldierWait++;
             }
         }
         else if (!myRC.isMovementActive())
         {
+            tryMoveForward();
+/*
             if (myRC.canMove(myRC.getDirection()))
             {
                 System.out.println("about to move");
@@ -69,7 +109,7 @@ public class ArchonPlayer extends BasePlayer
             else
             {
                 myRC.setDirection(myRC.getDirection().rotateRight());
-            }
+                }*/
         }
     }
 }
