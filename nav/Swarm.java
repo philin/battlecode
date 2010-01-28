@@ -7,8 +7,11 @@ import java.util.Random;
 public class Swarm extends MovementAction
 {
     Random rand = new Random();
+    //the
+    public static final int DIRECTION_MIN_DISTSQUARED=2;
+    public static final int DIRECTION_MAX_DISTSQUARED=16;
     //how important is which direction the robot is from us
-    public static final int DIRECTION_WEIGHT=3;
+    public static final int DIRECTION_WEIGHT=1;
     //how important is the direction other robots are facing
     public static final int HEADING_WEIGHT=1;
     public static final int ARCHON_WEIGHT=1000;
@@ -37,12 +40,19 @@ public class Swarm extends MovementAction
             RobotInfo rinfo = rc.senseRobotInfo(r);
             if(rinfo.team==team && rinfo.type == RobotType.WOUT)
             {
-                Direction d =rinfo.directionFacing;
-                directionCount[d.ordinal()]+=HEADING_WEIGHT;
-                d = loc.directionTo(rinfo.location);
-                if(d!=Direction.OMNI)
+                Direction d;
+                int distance = loc.distanceSquaredTo(rinfo.location);
+                if(distance<DIRECTION_MAX_DISTSQUARED)
                 {
-                    directionCount[d.ordinal()]+=DIRECTION_WEIGHT;
+                    if(distance>DIRECTION_MIN_DISTSQUARED)
+                    {
+                        d = loc.directionTo(rinfo.location);
+                        directionCount[d.ordinal()]+=DIRECTION_WEIGHT;
+                    }
+                    else{
+                        d =rinfo.directionFacing;
+                        directionCount[d.ordinal()]+=HEADING_WEIGHT;
+                    }
                 }
             }
         }
@@ -50,12 +60,19 @@ public class Swarm extends MovementAction
         {
             RobotInfo rinfo = rc.senseRobotInfo(r);
             if(rinfo.team==team){
-                Direction d =rinfo.directionFacing;
-                directionCount[d.ordinal()]+=HEADING_WEIGHT*ARCHON_WEIGHT;
-                d = loc.directionTo(rinfo.location);
-                if(d!=Direction.OMNI)
+                Direction d;
+                int distance = loc.distanceSquaredTo(rinfo.location);
+                if(distance<DIRECTION_MAX_DISTSQUARED)
                 {
-                    directionCount[d.ordinal()]+=DIRECTION_WEIGHT*ARCHON_WEIGHT;
+                    if(distance>DIRECTION_MIN_DISTSQUARED)
+                    {
+                        d = loc.directionTo(rinfo.location);
+                        directionCount[d.ordinal()]+=DIRECTION_WEIGHT*ARCHON_WEIGHT;
+                    }
+                    else{
+                        d =rinfo.directionFacing;
+                        directionCount[d.ordinal()]+=HEADING_WEIGHT*ARCHON_WEIGHT;
+                    }
                 }
             }
         }
