@@ -117,6 +117,10 @@ public class Swarm extends MovementAction
                 ret=backup.getNextDirection(state);
                 break;
         }
+        if(ret==null)
+        {
+            return null;
+        }
         if(rc.canMove(ret))
         {
             return ret;
