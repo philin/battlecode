@@ -69,10 +69,10 @@ public class ArchonPlayer extends BasePlayer
                info.type != RobotType.ARCHON && info.team.equals(myRC.getTeam()))
             {
                 hasWout=true;
-                double maxTransfer = Math.min(info.maxEnergon -
-                                              info.eventualEnergon,1);
-                if(maxTransfer < myRC.getEnergonLevel() &&
-                   myRC.getEnergonLevel() > MIN_ENERGON)
+                double maxTransfer =
+                    Math.min(info.maxEnergon-info.eventualEnergon,
+                             myRC.getEnergonLevel()-MIN_ENERGON);
+                if(maxTransfer>0)
                 {
                     myRC.transferUnitEnergon(maxTransfer, info.location,
                                              RobotLevel.ON_GROUND);
@@ -81,7 +81,14 @@ public class ArchonPlayer extends BasePlayer
         }
 
         MapLocation spawnLoc  = myRC.getLocation().add(myRC.getDirection());
-        if(myRC.getEnergonLevel() > MIN_ENERGON &&
+        RobotType spawnType;
+        if(spawnSoldierWait>=5){
+            spawnType = RobotType.SOLDIER;
+        }
+        else{
+            spawnType = RobotType.WOUT;
+        }
+        if(myRC.getEnergonLevel() > MIN_ENERGON+spawnType.spawnFluxCost() &&
            myRC.senseTerrainTile(spawnLoc).getType() ==
            TerrainTile.TerrainType.LAND &&
            myRC.senseGroundRobotAtLocation(spawnLoc) == null && !hasWout)
