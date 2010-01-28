@@ -24,6 +24,6 @@ abstract public class MovementAction extends Action
         }
     }
 
-    abstract protected Direction getNextDirection(RobotState state)
+    abstract public Direction getNextDirection(RobotState state)
         throws GameActionException;
 }

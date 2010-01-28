@@ -1,5 +1,6 @@
 package team338;
 
+import team338.nav.*;
 import battlecode.common.*;
 import static battlecode.common.GameConstants.*;
 
@@ -9,15 +10,14 @@ public class WoutPlayer extends BasePlayer
 
     protected Action exploreAction;
     protected Action returnToArchonAction;
+    boolean returning = true;
 
     public WoutPlayer(RobotController rc)
     {
         super(rc);
         exploreAction = nav.getBasicMovement();
-        returnToArchonAction = nav.getFollowArchon();
-
-        scheduler.addAction(returnToArchonAction);
-        //scheduler.addAction(exploreAction);
+        returnToArchonAction = new PathPlanning.Swarm(myRC,nav.getFollowArchon());
+        scheduler.addAction(new PathPlanning.Swarm(myRC,(MovementAction)exploreAction));
         scheduler.addAction(new SimpleAttackAction(rc, 1.0));
     }
 
@@ -43,10 +43,16 @@ public class WoutPlayer extends BasePlayer
 
     protected void woutCollectFlux(Object[] state) throws GameActionException
     {
-        if(scheduler.numActions() == 1)
-        {
-            returnToArchonAction = nav.getFollowArchon();
+        if(myRC.getEnergonLevel()<ARCHON_FIND_THRESHOLD && !returning){
+            returnToArchonAction = new PathPlanning.Swarm(myRC,nav.getFollowArchon());
+            scheduler.clearAllActions();
+            scheduler.addAction(new SimpleAttackAction(myRC, 1.0));
             scheduler.addAction(returnToArchonAction);
+        }
+        else if(scheduler.numActions() == 1)
+        {
+            exploreAction = nav.getBasicMovement();
+            scheduler.addAction(exploreAction);
         }
         /*MapLocation loc = myRC.getLocation();
         Direction currDir = myRC.getDirection();
