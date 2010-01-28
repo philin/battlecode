@@ -16,8 +16,8 @@ public class WoutPlayer extends BasePlayer
     {
         super(rc);
         exploreAction = nav.getBasicMovement();
-        returnToArchonAction = new PathPlanning.Swarm(myRC,nav.getFollowArchon());
-        scheduler.addAction(new PathPlanning.Swarm(myRC,(MovementAction)exploreAction));
+        returnToArchonAction = new Swarm(myRC,nav.getFollowArchon());
+        scheduler.addAction(new Swarm(myRC,(MovementAction)exploreAction));
         scheduler.addAction(new GreedyAttackAction(rc, 1.0));
     }
 
@@ -44,7 +44,7 @@ public class WoutPlayer extends BasePlayer
     protected void woutCollectFlux(Object[] state) throws GameActionException
     {
         if(myRC.getEnergonLevel()<ARCHON_FIND_THRESHOLD && !returning){
-            returnToArchonAction = new PathPlanning.Swarm(myRC,nav.getFollowArchon());
+            returnToArchonAction = new Swarm(myRC,nav.getFollowArchon());
             scheduler.clearAllActions();
             scheduler.addAction(new SimpleAttackAction(myRC, 1.0));
             scheduler.addAction(returnToArchonAction);
