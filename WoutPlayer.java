@@ -44,14 +44,14 @@ public class WoutPlayer extends BasePlayer
     protected void woutCollectFlux(Object[] state) throws GameActionException
     {
         if(myRC.getEnergonLevel()<ARCHON_FIND_THRESHOLD && !returning){
-            returnToArchonAction = new Swarm(myRC,nav.getFollowArchon());
+            returnToArchonAction = nav.getFollowArchon();
             scheduler.clearAllActions();
             scheduler.addAction(new SimpleAttackAction(myRC, 1.0));
             scheduler.addAction(returnToArchonAction);
         }
         else if(scheduler.numActions() == 1)
         {
-            exploreAction = nav.getBasicMovement();
+            exploreAction = new Swarm(myRC,nav.getBasicMovement());
             scheduler.addAction(exploreAction);
         }
         /*MapLocation loc = myRC.getLocation();

@@ -2,9 +2,17 @@ package team338.nav;
 
 import battlecode.common.*;
 import team338.*;
+import java.util.Random;
 
 public class Swarm extends MovementAction
 {
+    Random rand = new Random();
+    //how important is which direction the robot is from us
+    public static final int DIRECTION_WEIGHT=3;
+    //how important is the direction other robots are facing
+    public static final int HEADING_WEIGHT=1;
+    public static final int ARCHON_WEIGHT=1000;
+
     MovementAction backup;
     RobotController rc;
     Team team;
@@ -19,42 +27,22 @@ public class Swarm extends MovementAction
     public Direction getNextDirection(RobotState state)
         throws GameActionException
     {
-        System.out.println("Swarm");
         Robot[] ground = rc.senseNearbyGroundRobots();
         Robot[] air = rc.senseNearbyAirRobots();
         int[] directionCount = {0,0,0,0,0,0,0,0};
+        MapLocation loc = rc.getLocation();
 
         for(Robot r: ground)
         {
             RobotInfo rinfo = rc.senseRobotInfo(r);
-            if(rinfo.team==team && !rinfo.type.isBuilding()){
+            if(rinfo.team==team && rinfo.type == RobotType.WOUT)
+            {
                 Direction d =rinfo.directionFacing;
-                switch(d)
+                directionCount[d.ordinal()]+=HEADING_WEIGHT;
+                d = loc.directionTo(rinfo.location);
+                if(d!=Direction.OMNI)
                 {
-                    case NORTH:
-                        directionCount[0]++;
-                        break;
-                    case NORTH_EAST:
-                        directionCount[1]++;
-                        break;
-                    case EAST:
-                        directionCount[2]++;
-                        break;
-                    case SOUTH_EAST:
-                        directionCount[3]++;
-                        break;
-                    case SOUTH:
-                        directionCount[4]++;
-                        break;
-                    case SOUTH_WEST:
-                        directionCount[5]++;
-                        break;
-                    case WEST:
-                        directionCount[6]++;
-                        break;
-                    case NORTH_WEST:
-                        directionCount[7]++;
-                        break;
+                    directionCount[d.ordinal()]+=DIRECTION_WEIGHT;
                 }
             }
         }
@@ -63,32 +51,11 @@ public class Swarm extends MovementAction
             RobotInfo rinfo = rc.senseRobotInfo(r);
             if(rinfo.team==team){
                 Direction d =rinfo.directionFacing;
-                switch(d)
+                directionCount[d.ordinal()]+=HEADING_WEIGHT*ARCHON_WEIGHT;
+                d = loc.directionTo(rinfo.location);
+                if(d!=Direction.OMNI)
                 {
-                    case NORTH:
-                        directionCount[0]+=10000;
-                        break;
-                    case NORTH_EAST:
-                        directionCount[1]+=10000;
-                        break;
-                    case EAST:
-                        directionCount[2]+=10000;
-                        break;
-                    case SOUTH_EAST:
-                        directionCount[3]+=10000;
-                        break;
-                    case SOUTH:
-                        directionCount[4]+=10000;
-                        break;
-                    case SOUTH_WEST:
-                        directionCount[5]+=10000;
-                        break;
-                    case WEST:
-                        directionCount[6]+=10000;
-                        break;
-                    case NORTH_WEST:
-                        directionCount[7]+=10000;
-                        break;
+                    directionCount[d.ordinal()]+=DIRECTION_WEIGHT*ARCHON_WEIGHT;
                 }
             }
         }
@@ -137,9 +104,36 @@ public class Swarm extends MovementAction
         {
             return ret;
         }
+        else if(rc.canMove(state.d))
+        {
+            return state.d;
+        }
+        else if(state.d!=ret)
+        {
+            return ret;
+        }
         else
         {
-            return null;
+            if(rand.nextInt(2)==0){
+                Direction dir = ret.rotateRight();
+                while(!rc.canMove(dir) && dir!=ret){
+                    dir = dir.rotateRight();
+                }
+                if(dir==ret){
+                    return null;
+                }
+                return dir;
+            }
+            else{
+                Direction dir = ret.rotateLeft();
+                while(!rc.canMove(dir) && dir!=ret){
+                    dir = dir.rotateLeft();
+                }
+                if(dir==ret){
+                    return null;
+                }
+                return dir;
+            }
         }
     }
     public boolean isDone()
