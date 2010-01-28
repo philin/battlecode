@@ -18,7 +18,7 @@ public class WoutPlayer extends BasePlayer
         exploreAction = nav.getBasicMovement();
         returnToArchonAction = new PathPlanning.Swarm(myRC,nav.getFollowArchon());
         scheduler.addAction(new PathPlanning.Swarm(myRC,(MovementAction)exploreAction));
-        scheduler.addAction(new SimpleAttackAction(rc, 1.0));
+        scheduler.addAction(new GreedyAttackAction(rc, 1.0));
     }
 
     protected Behavior selectBehavior(Behavior oldBehavior)
