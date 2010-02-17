@@ -16,8 +16,8 @@ public class SoldierPlayer extends BasePlayer
     {
         super(rc);
         exploreAction = nav.getBasicMovement();
-        returnToArchonAction = new Swarm(myRC,nav.getFollowArchon());
-        // scheduler.addAction(new Swarm(myRC,(MovementAction)exploreAction));
+        returnToArchonAction = nav.getFollowArchon();
+        // scheduler.addActionnew Swarm(myRC,(MovementAction)exploreAction));
         scheduler.addAction(new GreedyAttackAction(rc, 1.0));
 
     }
@@ -63,19 +63,9 @@ public class SoldierPlayer extends BasePlayer
 
     protected void mobileAttackUnit(Object[] state) throws GameActionException
     {
-        if(myRC.getEnergonLevel()<ARCHON_FIND_THRESHOLD && !returning){
-            returnToArchonAction = nav.getFollowArchon();
-            scheduler.clearAllActions();
-            scheduler.addAction(new GreedyAttackAction(myRC, 1.0));
-            scheduler.addAction(returnToArchonAction);
-        }
-
-        else if(scheduler.numActions() == 1)
+        if(scheduler.numActions() == 1)
         {
-            exploreAction = new Swarm(myRC,nav.getBasicMovement());
-            scheduler.addAction(exploreAction);
-            //scheduler.addAction(new GreedyAttackAction(myRC, 1.0));
-            // scheduler.addAction(returnToArchonAction);
+            scheduler.addAction(nav.getFollowArchon());
         }
 
         /* MapLocation loc = myRC.getLocation();
