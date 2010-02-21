@@ -20,6 +20,7 @@ public class WoutPlayer extends BasePlayer
         returnToArchonAction = new Swarm(myRC,nav.getFollowArchon());
         scheduler.addAction(new Swarm(myRC,(MovementAction)exploreAction));
         scheduler.addAction(new GreedyAttackAction(rc, 1.0));
+        scheduler.addBackgroundAction(new FluxTransferAction(rc));
     }
 
     protected Behavior selectBehavior(Behavior oldBehavior)

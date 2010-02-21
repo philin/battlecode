@@ -5,15 +5,22 @@ import battlecode.common.*;
 
 public class ActionScheduler
 {
+
     public ActionScheduler()
     {
         allActions = new ArrayList<Action>();
+        backgroundActions = new ArrayList<Action>();
     }
 
     public void addAction(Action action)
     {
         allActions.add(action);
         current = allActions.iterator();
+    }
+
+    public void addBackgroundAction(Action action)
+    {
+        backgroundActions.add(action);
     }
 
     public void removeAction(Action action)
@@ -51,6 +58,12 @@ public class ActionScheduler
                 break;
             }
         }
+        for(Action action : backgroundActions)
+        {
+            if(action.canAct()){
+                action.run(state, rc);
+            }
+        }
     }
 
     private Action getNextAction()
@@ -59,6 +72,8 @@ public class ActionScheduler
             current = allActions.iterator();
         return current.next();
     }
+
+    private ArrayList<Action> backgroundActions;
 
     private ArrayList<Action> allActions;
     private Iterator<Action> current;
