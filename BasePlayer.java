@@ -61,10 +61,6 @@ abstract class BasePlayer implements Runnable
 
                     //select desired behavior
                     Behavior behavior = selectBehavior(oldBehavior);
-                    if(behavior==null){
-                        myRC.yield();
-                        continue;
-                    }
 
                     //run behavior: select actions
                     switch(behavior.type)
