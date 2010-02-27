@@ -18,14 +18,14 @@ public class ArchonPlayer extends BasePlayer
                                          null);
         return behavior;
     }
-    int spawnSoldierWait=0;
+    int spawnCounter=0;
+    static final int WOUT=4;
+    static final int SOLDIER=6;
+    static final int CHAINER=7;
+    static final int MAX=8;
+
     public void tryMoveForward() throws GameActionException
     {
-        if(spawnSoldierWait < 2)
-        {
-            spawnSoldierWait ++;
-            return;
-        }
         if(myRC.canMove(myRC.getDirection()))
         {
             System.out.println("about to move");
@@ -66,7 +66,8 @@ public class ArchonPlayer extends BasePlayer
         {
             RobotInfo info = myRC.senseRobotInfo(r);
             if(info.location.distanceSquaredTo(myRC.getLocation()) <= 2 &&
-               info.type != RobotType.ARCHON && info.team.equals(myRC.getTeam()))
+               info.type != RobotType.ARCHON && info.team.equals(myRC.getTeam()) &&
+               !info.type.isBuilding())
             {
                 hasWout=true;
                 double maxTransfer =
@@ -80,31 +81,40 @@ public class ArchonPlayer extends BasePlayer
             }
         }
 
+        boolean spawned = false;
+
         MapLocation spawnLoc  = myRC.getLocation().add(myRC.getDirection());
+        if(myRC.getFlux()>3000)
+        {
+            if(myRC.senseTerrainTile(spawnLoc).getType() == TerrainTile.TerrainType.LAND &&
+               myRC.senseGroundRobotAtLocation(spawnLoc) == null)
+            {
+                myRC.spawn(RobotType.COMM);
+                spawned = true;
+            }
+        }
+
+
         RobotType spawnType;
-        if(spawnSoldierWait>=5){
+        if(spawnCounter>=CHAINER){
+            spawnType = RobotType.CHAINER;
+        }
+        else if(spawnCounter>=SOLDIER){
             spawnType = RobotType.SOLDIER;
         }
         else{
             spawnType = RobotType.WOUT;
         }
-        if(myRC.getEnergonLevel() > MIN_ENERGON+spawnType.spawnFluxCost() &&
+        if(myRC.getEnergonLevel() > MIN_ENERGON+10+spawnType.spawnFluxCost() &&
            myRC.senseTerrainTile(spawnLoc).getType() ==
            TerrainTile.TerrainType.LAND &&
-           myRC.senseGroundRobotAtLocation(spawnLoc) == null && !hasWout)
+           myRC.senseGroundRobotAtLocation(spawnLoc) == null && !hasWout && !spawned)
         {
-            if(spawnSoldierWait >= 5)
-            {
-                myRC.spawn(RobotType.SOLDIER);
-                spawnSoldierWait=0;
-            }
-            else
-            {
-                myRC.spawn(RobotType.WOUT);
-                spawnSoldierWait++;
-            }
+            myRC.spawn(spawnType);
+            spawnCounter++;
+            spawnCounter%=MAX;
         }
-        else if (!myRC.isMovementActive())
+        else if (!myRC.isMovementActive() && !spawned)
         {
             tryMoveForward();
 /*
