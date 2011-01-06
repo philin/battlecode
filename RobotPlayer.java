@@ -3,9 +3,13 @@ package team046;
 import battlecode.common.*;
 import static battlecode.common.GameConstants.*;
 
+import team046.UnitTypes.*;
+
 public class RobotPlayer implements Runnable
 {
     private final RobotController myRC;
+
+
 
     public RobotPlayer(RobotController rc)
     {
@@ -20,6 +24,23 @@ public class RobotPlayer implements Runnable
     }
 
 
+    /*construct a unit of a specified type
+      types defined in UnitTypeConstants.java
+     */
+    public void buildUnit(BuilderController builder, int type)
+    {
+        switch (type)
+        {
+        case UnitTypeConstants.BASIC_BUILDER:
+            break;
+        case UnitTypeConstants.HEAVY_ATTACKER:
+            break;
+        default:
+            break;
+        }
+    }
+
+    //test function, replace soon
     public void runMotor(MovementController motor)
     {
 
