@@ -15,7 +15,7 @@ class Map{
             this.mine = mine;
             updateRound = Clock.getRoundNum();
         }
-    };
+    }
     private LocationInfo[][] map;
     private int size;
     private RobotController rc;
