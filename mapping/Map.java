@@ -46,6 +46,16 @@ public class Map{
 
     public TerrainTile getTerrain(int x, int y){
         MapLocation loc = new MapLocation(x,y);
+        return getTerrain(loc);
+    }
+
+    public TerrainTile getTerrain(MapLocation loc){
+        TerrainTile tile = rc.senseTerrainTile(loc);
+        if(tile!=null){
+            return tile;
+        }
+        int x = loc.x;
+        int y = loc.y;
         if(map[x][y]==null){
             map[x][y] = new LocationInfo(loc);
             if(sensor.canSenseSquare(loc) &&
@@ -75,9 +85,6 @@ public class Map{
             }
         }
         return map[x][y].terrain;
-    }
-    public TerrainTile getTerrain(MapLocation loc){
-        //doing this wastes some bytecodes
-        return getTerrain(loc.x,loc.y);
+
     }
 }
