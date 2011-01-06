@@ -1,4 +1,4 @@
-package team046.UnitTypes;
+package team046.units;
 
 import battlecode.common.*;
 import static battlecode.common.GameConstants.*;

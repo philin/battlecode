@@ -3,7 +3,7 @@ package team046;
 import battlecode.common.*;
 import static battlecode.common.GameConstants.*;
 
-import team046.UnitTypes.*;
+import team046.units.*;
 
 public class RobotPlayer implements Runnable
 {
