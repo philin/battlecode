@@ -5,13 +5,21 @@ import battlecode.common.*;
 class Map{
     public class LocationInfo{
         public TerrainTile terrain;
-        public GameObject mine;
-        public GameObject[] robots;
+        public Mine mine;
+        public Robot[] robots;
         public int updateRound;
+        public LocationInfo(MapLocation loc){
+            terrain = Map.this.rc.senseTerrainTile(loc);
+        }
+        public void addMine(Mine mine){
+            this.mine = mine;
+            updateRound = Clock.getRoundNum();
+        }
     };
     private LocationInfo[][] map;
     private int size;
     private RobotController rc;
+    private SensorController sensor;
     static final int MAX_SIZE = 70;
     public Map(RobotController rc){
         this(rc, MAX_SIZE);
@@ -25,22 +33,40 @@ class Map{
         }
     }
 
+    public void setSensor(SensorController controller){
+        sensor = controller;
+    }
+
     public void setTerrain(int x, int y, TerrainTile tile){
         map[x][y].terrain = tile;
     }
 
     public TerrainTile getTerrain(int x, int y){
-        if(map[x][y]==null){
-            map[x][y] = new LocationInfo();
-        }
-        if(map[x][y].terrain!=null){
-            return map[x][y].terrain;
-        }
         MapLocation loc = new MapLocation(x,y);
-        map[x][y].terrain = rc.senseTerrainTile(loc);
-        if(map[x][y].terrain!=null){
-            //TODO requiest the tile from comm
-            //comm.requestTile(x,y);
+        if(map[x][y]==null){
+            map[x][y] = new LocationInfo(loc);
+            if(sensor.canSenseSquare(loc)){
+                Mine[] mines = sensor.senseNearbyGameObjects(Mine.class);
+                //XXX what we should really do is iterate over all locations in
+                //the sensor range and set them
+                for(Mine m : mines){
+                    MapLocation mineLoc = m.getLocation();
+                    if(map[mineLoc.x][mineLoc.y]==null){
+                        map[mineLoc.x][mineLoc.y] = new LocationInfo(mineLoc);
+                        map[mineLoc.x][mineLoc.y].addMine(m);
+                    }
+                }
+            }
+        }
+        else{
+            if(map[x][y].terrain!=null){
+                return map[x][y].terrain;
+            }
+            map[x][y].terrain = rc.senseTerrainTile(loc);
+            if(map[x][y].terrain!=null){
+                //TODO requiest the tile from comm
+                //comm.requestTile(x,y);
+            }
         }
         return map[x][y].terrain;
     }
