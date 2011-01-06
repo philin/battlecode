@@ -20,7 +20,10 @@ class Map{
     private int size;
     private RobotController rc;
     private SensorController sensor;
-    static final int MAX_SIZE = 70;
+    private int lastSenseRound=0;
+    private static final int MIN_SENSE_WAIT=10;
+    private static final int MAX_SIZE = 70;
+
     public Map(RobotController rc){
         this(rc, MAX_SIZE);
     }
@@ -45,10 +48,13 @@ class Map{
         MapLocation loc = new MapLocation(x,y);
         if(map[x][y]==null){
             map[x][y] = new LocationInfo(loc);
-            if(sensor.canSenseSquare(loc)){
+            if(sensor.canSenseSquare(loc) &&
+               lastSenseRound-Clock.getRoundNum()>MIN_SENSE_WAIT){
+                lastSenseRound=Clock.getRoundNum();
                 Mine[] mines = sensor.senseNearbyGameObjects(Mine.class);
                 //XXX what we should really do is iterate over all locations in
-                //the sensor range and set them
+                //the sensor range and set them. Right now
+                //we use that last round we sensed as a heuristic
                 for(Mine m : mines){
                     MapLocation mineLoc = m.getLocation();
                     if(map[mineLoc.x][mineLoc.y]==null){
