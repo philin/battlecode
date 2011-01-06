@@ -2,7 +2,7 @@ package team046.mapping;
 
 import battlecode.common.*;
 
-class Map{
+public class Map{
     public class LocationInfo{
         public TerrainTile terrain;
         public Mine mine;
