@@ -56,6 +56,9 @@ public class Map{
         }
         int x = loc.x;
         int y = loc.y;
+        if(x<0 || x>=size || y<0 || y>=size){
+            return TerrainTile.OFF_MAP;
+        }
         if(map[x][y]==null){
             map[x][y] = new LocationInfo(loc);
             if(sensor.canSenseSquare(loc) &&
