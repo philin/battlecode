@@ -48,6 +48,7 @@ public class RobotPlayer implements Runnable
             {
                 if(components[i].type() == ComponentType.CONSTRUCTOR)
                 {
+                    System.out.println("initiating BASIC_BUILDER");
                     runBasicBuilder();
                 }
             }
@@ -84,6 +85,22 @@ public class RobotPlayer implements Runnable
                     else
                     {
                         builder.build(ComponentType.CONSTRUCTOR,
+                                      loc,
+                                      RobotLevel.ON_GROUND);
+                        break;
+                    }
+                }
+                while (true)
+                {
+                    //vait for cooldown and resources
+                    if(builder.isActive() ||
+                       myRC.getTeamResources() < ComponentType.SIGHT.cost)
+                    {
+                        myRC.yield();
+                    }
+                    else
+                    {
+                        builder.build(ComponentType.SIGHT,
                                       loc,
                                       RobotLevel.ON_GROUND);
                         break;
