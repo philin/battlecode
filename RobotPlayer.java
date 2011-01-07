@@ -172,6 +172,7 @@ public class RobotPlayer implements Runnable
     */
     public void runBasicBuilder()
     {
+
         ComponentController [] components = myRC.components();
         BuilderController builder = null;
         MovementController motor = null;
@@ -186,10 +187,15 @@ public class RobotPlayer implements Runnable
                 motor = (MovementController)components[i];
             }
         }
+        Map map = new Map(myRC);
+        Navigator navigator = new Navigator(myRC,motor,map);
+        Random rand = new Random();
+        int changeCounter = 0;
         try
         {
             while (true)
             {
+                myRC.yield();
                 boolean build = false;
 
 
@@ -200,22 +206,17 @@ public class RobotPlayer implements Runnable
                 }
                 if(!build)
                 {
-
-                    if(motor.isActive())
-                    {
-                        myRC.yield();
-                    }
-                    else if (motor.canMove(myRC.getDirection()))
-                    {
-                        //System.out.println("about to move");
-                        motor.moveForward();
-                    }
-                    else
-                    {
-                        motor.setDirection(myRC.getDirection().rotateRight());
+                    navigator.doMovement();
+                    changeCounter++;
+                    if(changeCounter>10){
+                        //choose another location
+                        MapLocation newLocation
+                            = myRC.getLocation().add(5*(rand.nextInt(10)-4),
+                                                     5*(rand.nextInt(10)-4));
+                        changeCounter = 0;
+                        navigator.setDestination(newLocation);
                     }
                 }
-                myRC.yield();
             }
         }
         catch (Exception ex)
