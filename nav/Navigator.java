@@ -55,6 +55,7 @@ public class Navigator{
                 for(j=0;j<8;j++){
                     if(isPassable(curr.add(dir))){
                         actionQueue[i]=dir;
+                        curr = curr.add(dir);
                         break;
                     }
                     dir = dir.rotateLeft();
@@ -80,6 +81,7 @@ public class Navigator{
                 for(j=0;j<8;j++){
                     if(isPassable(curr.add(dir))){
                         actionQueue[i]=dir;
+                        curr = curr.add(dir);
                         break;
                     }
                     dir = dir.rotateLeft();
