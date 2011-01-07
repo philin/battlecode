@@ -56,7 +56,7 @@ public class RobotPlayer implements Runnable
     }
     /*construct a unit of a specified type
       types defined in UnitTypeConstants.java
-     */
+    */
     public void buildUnit(BuilderController builder, int type, MapLocation loc)
     {
         try{
@@ -79,7 +79,6 @@ public class RobotPlayer implements Runnable
                     else
                     {
                         builder.build(ComponentType.CONSTRUCTOR, loc, RobotLevel.ON_GROUND);
-                        System.out.println("built component!!!!!!!!!!!!!");
                         break;
                     }
                 }
@@ -89,7 +88,7 @@ public class RobotPlayer implements Runnable
             default:
                 break;
             }
-            System.out.println("built!!!");
+            System.out.println("BASIC_BUILDER built");
         }
         catch(Exception ex)
         {
@@ -111,20 +110,46 @@ public class RobotPlayer implements Runnable
             else if (components[i]  instanceof SensorController)
             {
                 sensor = (SensorController)components[i];
-                System.out.println("hiiii");
+
             }
         }
-
         while(true)
         {
-            System.out.println(myRC.getTeamResources());
             if(myRC.getTeamResources() > 50)
             {
-
-                buildUnit(builder,
-                          UnitTypeConstants.BASIC_BUILDER,
-                          myRC.getLocation());
-
+                MapLocation loc = myRC.getLocation();
+                try{
+                    if(!Util.isOccupied(sensor, loc.add(Direction.NORTH)))
+                    {
+                        loc = loc.add(Direction.NORTH);
+                    }
+                    else if(!Util.isOccupied(sensor, loc.add(Direction.EAST)))
+                    {
+                        loc = loc.add(Direction.EAST);
+                    }
+                    else if(!Util.isOccupied(sensor, loc.add(Direction.SOUTH)))
+                    {
+                        loc = loc.add(Direction.SOUTH);
+                    }
+                    else if(!Util.isOccupied(sensor, loc.add(Direction.WEST)))
+                    {
+                        loc = loc.add(Direction.WEST);
+                    }
+                    else
+                    {
+                        loc = null;
+                    }
+                    if (loc != null)
+                    {
+                        buildUnit(builder,
+                                  UnitTypeConstants.BASIC_BUILDER,
+                                  loc);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                }
             }
             myRC.yield();
         }
@@ -146,41 +171,39 @@ public class RobotPlayer implements Runnable
                 motor = (MovementController)components[i];
             }
         }
-        System.out.println("identified basic builder");
         try
         {
-        while (true)
-        {
-            boolean build = false;
-
-
-            if(myRC.getTeamResources() > 50)
+            while (true)
             {
-                build = true;
+                boolean build = false;
 
 
+                if(myRC.getTeamResources() > 50)
+                {
+                    build = true;
+
+                }
+                if(!build)
+                {
+
+                    if(motor.isActive())
+                    {
+                        myRC.yield();
+                    }
+                    else if (motor.canMove(myRC.getDirection()))
+                    {
+                        //System.out.println("about to move");
+                        motor.moveForward();
+                    }
+                    else
+                    {
+                        motor.setDirection(myRC.getDirection().rotateRight());
+                    }
+
+
+                }
+                myRC.yield();
             }
-            if(!build)
-            {
-
-                if(motor.isActive())
-                {
-                    myRC.yield();
-                }
-                else if (motor.canMove(myRC.getDirection()))
-                {
-                    //System.out.println("about to move");
-                    motor.moveForward();
-                }
-                else
-                {
-                    motor.setDirection(myRC.getDirection().rotateRight());
-                }
-
-
-            }
-            myRC.yield();
-        }
         }
         catch (Exception ex)
         {
