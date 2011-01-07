@@ -83,21 +83,21 @@ public class Navigator{
     }
 
     public void doMovement(){
-        if(motor.isActive() || actionQueue==null){
-            return;
-        }
-         if(actionQueueOffset>=actionQueue.length){
-            if(!currLocation.equals(dest)){
-                doPathing();
-            }
-            else{
-                if(desiredDirection!=Direction.OMNI){
-                    motor.setDirection(desiredDirection);
-                }
-            }
-            return;
-        }
         try{
+            if(motor.isActive() || actionQueue==null){
+                return;
+            }
+            if(actionQueueOffset>=actionQueue.length){
+                if(!currLocation.equals(dest)){
+                    doPathing();
+                }
+                else{
+                    if(desiredDirection!=Direction.OMNI){
+                        motor.setDirection(desiredDirection);
+                    }
+                }
+                return;
+            }
             if(actionQueue[actionQueueOffset]==currDirection){
                 //move forward
                 if(motor.canMove(currDirection)){
@@ -108,6 +108,7 @@ public class Navigator{
                     waitCount++;
                     if(waitCount>STUCK_THRESHOLD){
                         //TODO unsticking logic
+                        waitCount=0;
                     }
                 }
             }
