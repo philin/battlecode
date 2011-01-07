@@ -13,8 +13,6 @@ public class RobotPlayer implements Runnable
 {
     private final RobotController myRC;
 
-
-
     public RobotPlayer(RobotController rc)
     {
         myRC = rc;
@@ -37,6 +35,10 @@ public class RobotPlayer implements Runnable
     }
 
 
+    /*
+      robots must wait in this function until they have enough modules to fall into a
+      unit category
+    */
     public void initiateRobotType()
     {
         while (true)
@@ -54,7 +56,8 @@ public class RobotPlayer implements Runnable
         }
 
     }
-    /*construct a unit of a specified type
+    /*
+      construct a unit of a specified type
       types defined in UnitTypeConstants.java
     */
     public void buildUnit(BuilderController builder, int type, MapLocation loc)
@@ -72,13 +75,17 @@ public class RobotPlayer implements Runnable
                 //add the components
                 while (true)
                 {
-                    if(builder.isActive() || myRC.getTeamResources() < ComponentType.CONSTRUCTOR.cost)
+                    //vait for cooldown and resources
+                    if(builder.isActive() ||
+                       myRC.getTeamResources() < ComponentType.CONSTRUCTOR.cost)
                     {
                         myRC.yield();
                     }
                     else
                     {
-                        builder.build(ComponentType.CONSTRUCTOR, loc, RobotLevel.ON_GROUND);
+                        builder.build(ComponentType.CONSTRUCTOR,
+                                      loc,
+                                      RobotLevel.ON_GROUND);
                         break;
                     }
                 }
@@ -96,6 +103,9 @@ public class RobotPlayer implements Runnable
         }
     }
 
+    /*
+      this function runs the behavioral sequence for the starting buildings
+    */
     public void runBuilding()
     {
         ComponentController [] components = myRC.components();
@@ -119,6 +129,7 @@ public class RobotPlayer implements Runnable
             {
                 MapLocation loc = myRC.getLocation();
                 try{
+                    //find the first available tile
                     if(!Util.isOccupied(sensor, loc.add(Direction.NORTH)))
                     {
                         loc = loc.add(Direction.NORTH);
@@ -155,6 +166,10 @@ public class RobotPlayer implements Runnable
         }
     }
 
+
+    /*
+      this function defines the behavioral sequence for a BASIC_BUILDER
+    */
     public void runBasicBuilder()
     {
         ComponentController [] components = myRC.components();
@@ -199,8 +214,6 @@ public class RobotPlayer implements Runnable
                     {
                         motor.setDirection(myRC.getDirection().rotateRight());
                     }
-
-
                 }
                 myRC.yield();
             }
@@ -211,26 +224,4 @@ public class RobotPlayer implements Runnable
         }
     }
 
-    //test function, replace soon
-    public void runMotor(MovementController motor)
-    {
-        Map map = new Map(myRC);
-        Navigator navigator = new Navigator(myRC,motor,map);
-        Random rand = new Random();
-        int changeCounter = 0;
-        while(true){
-
-            myRC.yield();
-            navigator.doMovement();
-            changeCounter++;
-            if(changeCounter>10){
-                //choose another location
-                MapLocation newLocation
-                    = myRC.getLocation().add(rand.nextInt(10)-4,
-                                             rand.nextInt(10)-4);
-                changeCounter = 0;
-                navigator.setDestination(newLocation);
-            }
-        }
-    }
 }
