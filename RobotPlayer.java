@@ -88,7 +88,7 @@ public class RobotPlayer implements Runnable
                 }
 
                 break;
-            case UnitTypeConstants.HEAVY_ATTACKER:
+            case UnitCommon.HEAVY_ATTACKER:
                 break;
             default:
                 break;
@@ -177,7 +177,7 @@ public class RobotPlayer implements Runnable
                     if (loc != null)
                     {
                         buildUnit(builder,
-                                  UnitTypeConstants.BASIC_BUILDER,
+                                  UnitCommon.BASIC_BUILDER,
                                   loc);
                     }
                 }
