@@ -23,6 +23,7 @@ public class BasicBuilder extends Unit
         ComponentController [] components = myRC.components();
         BuilderController builder = null;
         MovementController motor = null;
+        SensorController sensor = null;
         for(int i = 0; i < components.length; ++i)
         {
             if(components[i].type() == ComponentType.CONSTRUCTOR)
@@ -33,9 +34,13 @@ public class BasicBuilder extends Unit
             {
                 motor = (MovementController)components[i];
             }
+            else if(components[i] instanceof SensorController)
+            {
+                sensor = (SensorController)components[i];
+            }
         }
         Map map = new Map(myRC);
-        Navigator navigator = new Navigator(myRC,motor,map);
+        Navigator navigator = new Navigator(myRC,motor, sensor, map);
         Random rand = new Random();
         int changeCounter = 0;
         try
@@ -43,7 +48,7 @@ public class BasicBuilder extends Unit
             while (true)
             {
                 myRC.yield();
-                // boolean build = false;
+
                 navigator.doMovement();
                 changeCounter++;
                 if(changeCounter>10){
