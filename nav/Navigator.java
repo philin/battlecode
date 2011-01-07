@@ -10,6 +10,7 @@ public class Navigator{
     private Direction[] actionQueue;
     private Direction currDirection;
     private int actionQueueOffset;
+    private int actionQueueLength;
     private MapLocation dest;
     private Direction desiredDirection;
     private MapLocation currLocation;
@@ -44,17 +45,27 @@ public class Navigator{
             //TODO implement
             //for now, it does the same thing as short distance planning
             MapLocation curr = currLocation;
-            for(int i=0;i<MAX_ACTION_QUEUE_LENGTH;i++){
+            int i;
+            for(i=0;i<MAX_ACTION_QUEUE_LENGTH;i++){
+                if(curr.equals(dest)){
+                    break;
+                }
                 Direction dir = curr.directionTo(dest);
-                for(int j=0;j<8;j++){
+                int j;
+                for(j=0;j<8;j++){
                     if(isPassable(curr.add(dir))){
                         actionQueue[i]=dir;
                         break;
                     }
                     dir = dir.rotateLeft();
                 }
-            }
+                //XXX cleanup
+                if(j==8){
+                    break;
+                }
 
+            }
+            actionQueueLength=i;
         }
         else{
             //short distance planning
@@ -87,7 +98,7 @@ public class Navigator{
             if(motor.isActive() || actionQueue==null){
                 return;
             }
-            if(actionQueueOffset>=actionQueue.length){
+            if(actionQueueOffset>=actionQueueLength){
                 if(!currLocation.equals(dest)){
                     doPathing();
                 }
