@@ -1,9 +1,13 @@
 package team046;
 
+import java.util.Random;
+
 import battlecode.common.*;
 import static battlecode.common.GameConstants.*;
 
 import team046.units.*;
+import team046.mapping.*;
+import team046.nav.*;
 
 public class RobotPlayer implements Runnable
 {
@@ -180,36 +184,23 @@ public class RobotPlayer implements Runnable
     //test function, replace soon
     public void runMotor(MovementController motor)
     {
+        Map map = new Map(myRC);
+        Navigator navigator = new Navigator(myRC,motor,map);
+        Random rand = new Random();
+        int changeCounter = 0;
+        while(true){
 
-        while (true)
-        {
-            try
-            {
-                /*** beginning of main loop ***/
-                while (motor.isActive())
-                {
-                    myRC.yield();
-                }
-
-                if (motor.canMove(myRC.getDirection()))
-                {
-                    //System.out.println("about to move");
-                    motor.moveForward();
-                }
-                else
-                {
-                    motor.setDirection(myRC.getDirection().rotateRight());
-                }
-
-                /*** end of main loop ***/
-            }
-            catch (Exception e)
-            {
-                System.out.println("caught exception:");
-                e.printStackTrace();
+            myRC.yield();
+            navigator.doMovement();
+            changeCounter++;
+            if(changeCounter>10){
+                //choose another location
+                MapLocation newLocation
+                    = myRC.getLocation().add(rand.nextInt(10)-4,
+                                             rand.nextInt(10)-4);
+                changeCounter = 0;
+                navigator.setDestination(newLocation);
             }
         }
     }
-
-
 }
