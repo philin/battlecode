@@ -8,9 +8,12 @@ public abstract class Planner{
         if(navModule!=null){
             navModule.init(this);
         }
-        if(mappingModule!=
-        mappingModule.init(this);
-        commModule.init(this);
+        if(mappingModule!=null){
+            mappingModule.init(this);
+        }
+        if(commModule!=null){
+            commModule.init(this);
+        }
     }
 
     public Module getNavModule(){
