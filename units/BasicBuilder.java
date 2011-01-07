@@ -40,7 +40,7 @@ public class BasicBuilder extends Unit
             }
         }
         Map map = new Map(myRC);
-        Navigator navigator = new Navigator(myRC,motor, sensor, map);
+        Navigator navigator = new Navigator(myRC,motor, map);
         Random rand = new Random();
         int changeCounter = 0;
         try
