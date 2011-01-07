@@ -11,8 +11,11 @@ public class Navigator{
     private Direction currDirection;
     private int actionQueueOffset;
     private MapLocation dest;
+    private Direction desiredDirection;
     private MapLocation currLocation;
     private MovementController motor;
+    private int waitCount=0;
+    private static final int STUCK_THRESHOLD=10;
     private static final int LONG_DISTANCE_THRESHOLD=25;
     private static final int MAX_ACTION_QUEUE_LENGTH=15;
     private Map map;
@@ -69,9 +72,14 @@ public class Navigator{
         }
     }
 
-    public void setDestination(MapLocation loc){
+    public void setDestination(MapLocation loc, Direction direction){
+        desiredDirection = direction;
         dest = loc;
         doPathing();
+    }
+
+    public void setDestination(MapLocation loc){
+        setDestination(loc,Direction.OMNI);
     }
 
     public void doMovement(){
@@ -81,6 +89,11 @@ public class Navigator{
          if(actionQueueOffset>=actionQueue.length){
             if(!currLocation.equals(dest)){
                 doPathing();
+            }
+            else{
+                if(desiredDirection!=Direction.OMNI){
+                    motor.setDirection(desiredDirection);
+                }
             }
             return;
         }
@@ -92,7 +105,10 @@ public class Navigator{
                     actionQueueOffset++;
                 }
                 else{
-                    //TODO check if were stuck
+                    waitCount++;
+                    if(waitCount>STUCK_THRESHOLD){
+                        //TODO unsticking logic
+                    }
                 }
             }
             else{

@@ -2,12 +2,18 @@ package team046;
 
 public abstract class Planner{
 
-    private Module navModule,mappingModule,commModule;
+    protected Module navModule,mappingModule,commModule;
 
     public void init(){
-        navModule.init(this);
-        mappingModule.init(this);
-        commModule.init(this);
+        if(navModule!=null){
+            navModule.init(this);
+        }
+        if(mappingModule!=null){
+            mappingModule.init(this);
+        }
+        if(commModule!=null){
+            commModule.init(this);
+        }
     }
 
     public Module getNavModule(){
