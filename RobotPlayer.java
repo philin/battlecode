@@ -101,13 +101,20 @@ public class RobotPlayer implements Runnable
     {
         ComponentController [] components = myRC.components();
         BuilderController builder = null;
+        SensorController sensor = null;
         for(int i = 0; i < components.length; ++i)
         {
-            if(components[i].type() == ComponentType.RECYCLER)
+            if (components[i].type() == ComponentType.RECYCLER)
             {
                 builder = (BuilderController)components[i];
             }
+            else if (components[i]  instanceof SensorController)
+            {
+                sensor = (SensorController)components[i];
+                System.out.println("hiiii");
+            }
         }
+
         while(true)
         {
             System.out.println(myRC.getTeamResources());
@@ -116,7 +123,7 @@ public class RobotPlayer implements Runnable
 
                 buildUnit(builder,
                           UnitTypeConstants.BASIC_BUILDER,
-                          myRC.getLocation().add(Direction.SOUTH));
+                          myRC.getLocation());
 
             }
             myRC.yield();
