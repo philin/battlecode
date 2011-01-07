@@ -196,27 +196,18 @@ public class RobotPlayer implements Runnable
             while (true)
             {
                 myRC.yield();
-                boolean build = false;
-
-
-                if(myRC.getTeamResources() > 50)
-                {
-                    build = true;
-
+                // boolean build = false;
+                navigator.doMovement();
+                changeCounter++;
+                if(changeCounter>10){
+                    //choose another location
+                    MapLocation newLocation
+                        = myRC.getLocation().add(5*(rand.nextInt(10)-4),
+                                                 5*(rand.nextInt(10)-4));
+                    changeCounter = 0;
+                    navigator.setDestination(newLocation);
                 }
-                if(!build)
-                {
-                    navigator.doMovement();
-                    changeCounter++;
-                    if(changeCounter>10){
-                        //choose another location
-                        MapLocation newLocation
-                            = myRC.getLocation().add(5*(rand.nextInt(10)-4),
-                                                     5*(rand.nextInt(10)-4));
-                        changeCounter = 0;
-                        navigator.setDestination(newLocation);
-                    }
-                }
+
             }
         }
         catch (Exception ex)
