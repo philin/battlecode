@@ -2,7 +2,7 @@ package team046;
 
 public abstract class Planner{
 
-    Module navModule,mappingModule,commModule;
+    private Module navModule,mappingModule,commModule;
 
     public void init(){
         navModule.init(this);
