@@ -74,38 +74,9 @@ public class RobotPlayer implements Runnable
                 //create the chassis
                 builder.build(Chassis.LIGHT, loc);
                 //add the components
-                while (true)
-                {
-                    //vait for cooldown and resources
-                    if(builder.isActive() ||
-                       myRC.getTeamResources() < ComponentType.CONSTRUCTOR.cost)
-                    {
-                        myRC.yield();
-                    }
-                    else
-                    {
-                        builder.build(ComponentType.CONSTRUCTOR,
-                                      loc,
-                                      RobotLevel.ON_GROUND);
-                        break;
-                    }
-                }
-                while (true)
-                {
-                    //vait for cooldown and resources
-                    if(builder.isActive() ||
-                       myRC.getTeamResources() < ComponentType.SIGHT.cost)
-                    {
-                        myRC.yield();
-                    }
-                    else
-                    {
-                        builder.build(ComponentType.SIGHT,
-                                      loc,
-                                      RobotLevel.ON_GROUND);
-                        break;
-                    }
-                }
+                addComponent(builder, ComponentType.CONSTRUCTOR, loc);
+                addComponent(builder, ComponentType.SIGHT, loc);
+
                 break;
             case UnitTypeConstants.HEAVY_ATTACKER:
                 break;
@@ -118,6 +89,32 @@ public class RobotPlayer implements Runnable
         {
             ex.printStackTrace();
         }
+    }
+
+    /*
+      this function handles the component adding wait loop
+     */
+    private void addComponent(BuilderController builder, ComponentType component, MapLocation loc)
+        throws GameActionException
+    {
+
+        while (true)
+        {
+            //vait for cooldown and resources
+            if(builder.isActive() ||
+               myRC.getTeamResources() < component.cost)
+            {
+                myRC.yield();
+            }
+            else
+            {
+                builder.build(component,
+                              loc,
+                              RobotLevel.ON_GROUND);
+                break;
+            }
+        }
+
     }
 
     /*
