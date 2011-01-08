@@ -35,7 +35,7 @@ public class BasicBuilding extends Unit
         }
         while(true)
         {
-            if(myRC.getTeamResources() > 100)
+            if(myRC.getTeamResources() > 180)
             {
                 MapLocation loc = myRC.getLocation();
                 try{

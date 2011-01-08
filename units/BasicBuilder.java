@@ -69,7 +69,6 @@ public class BasicBuilder extends Unit
                         {
                             //location is available
                             this.currentstate = SPOTTED_MINE;
-                            System.out.println("spotted mine");
                             targetMine = mineLoc;
                             return;
                         }
@@ -103,8 +102,6 @@ public class BasicBuilder extends Unit
             }
             else
             {
-
-                System.out.println("reached mine");
                 this.currentstate = BUILDING_ON_MINE;
                 return;
             }
@@ -117,9 +114,8 @@ public class BasicBuilder extends Unit
         while (true)
         {
             myRC.yield();
-            System.out.println("building mine");
             try{
-                if (myRC.getTeamResources() > Chassis.BUILDING.cost &&
+                if (myRC.getTeamResources() > Chassis.BUILDING.cost + 10 &&
                     this.sensor.senseObjectAtLocation(this.targetMine, RobotLevel.ON_GROUND) == null)
                 {
 
@@ -158,7 +154,6 @@ public class BasicBuilder extends Unit
             }
             else if(components[i].type() == ComponentType.SIGHT)
             {
-                System.out.println("sensor found");
                 this.sensor = (SensorController)components[i];
             }
         }

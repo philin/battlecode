@@ -58,7 +58,7 @@ public class Util
             default:
                 break;
             }
-            System.out.println("BASIC_BUILDING built");
+
         }
         catch(Exception ex)
         {

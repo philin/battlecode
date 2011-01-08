@@ -22,11 +22,7 @@ public class RobotPlayer implements Runnable
 
     public void run()
     {
-        System.out.println(myRC.getTeamResources());
-
         initiateUnitType();
-
-
     }
 
     /*
@@ -55,7 +51,7 @@ public class RobotPlayer implements Runnable
                 }
                 if(hasSensor && hasBuilder)
                 {
-                    System.out.println("initiating BASIC_BUILDING");
+
                     Unit basicBuilding = new BasicBuilding();
                     this.unit = basicBuilding;
                     this.unit.runBehavior(this.myRC);
@@ -81,7 +77,7 @@ public class RobotPlayer implements Runnable
                 }
                 if(hasSensor && hasBuilder)
                 {
-                     System.out.println("initiating BASIC_BUILDER");
+
                      Unit basicBuilder = new BasicBuilder();
                      this.unit = basicBuilder;
                      basicBuilder.runBehavior(myRC);
