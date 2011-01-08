@@ -17,7 +17,7 @@ public final class UnitCommon
 
     public static final Chassis BASIC_BUILDING_CHASSIS = Chassis.BUILDING;
     public static final RobotLevel BASIC_BUILDING_HEIGHT = RobotLevel.ON_GROUND;
-    public static final ComponentType[] BASIC_BUILDING_COMPONENTS = { ComponentType.RECYCLER, ComponentType.SIGHT };
+    public static final ComponentType[] BASIC_BUILDING_COMPONENTS = { ComponentType.RECYCLER};
 
 
 

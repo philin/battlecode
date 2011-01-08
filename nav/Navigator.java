@@ -181,7 +181,7 @@ public class Navigator{
         }
     }
 
-    boolean isAtDest(){
+    public boolean isAtDest(){
         return actionQueue==null;
     }
 }

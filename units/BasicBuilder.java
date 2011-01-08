@@ -6,6 +6,7 @@ import static battlecode.common.GameConstants.*;
 
 import team046.mapping.*;
 import team046.nav.*;
+import team046.*;
 
 public class BasicBuilder extends Unit
 {
@@ -92,17 +93,18 @@ public class BasicBuilder extends Unit
 
     private void spottedMineBehavior()
     {
-        navigator.setDestination(targetMine);
+        navigator.setDestination(targetMine, false);
         while (true)
         {
             myRC.yield();
-            if (!myRC.getLocation().equals(targetMine))
+
+            if (!this.navigator.isAtDest())
             {
                 navigator.doMovement();
             }
             else
             {
-                this.targetMine = null;
+
                 System.out.println("reached mine");
                 this.currentstate = BUILDING_ON_MINE;
                 return;
@@ -116,8 +118,27 @@ public class BasicBuilder extends Unit
         while (true)
         {
             myRC.yield();
-            // System.out.println("building mine");
+            System.out.println("building mine");
+            try{
+                if (myRC.getTeamResources() > Chassis.BUILDING.cost &&
+                    this.sensor.senseObjectAtLocation(this.targetMine, RobotLevel.ON_GROUND) == null)
+                {
 
+                    Util.buildUnit(this.myRC,
+                                   this.builder,
+                                   UnitCommon.BASIC_BUILDING,
+                                   this.targetMine);
+
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
+
+            this.targetMine = null;
+            this.currentstate = FORAGING;
+            return;
         }
 
     }
