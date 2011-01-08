@@ -17,6 +17,11 @@ public abstract class Planner{
             }
         }
     }
+
+    protected Module addModule(Module module){
+        modules[module.getType().ordinal()]=module
+    }
+
     public Module getModule(ModuleType type){
         return modules[type.ordinal()];
     }
