@@ -116,7 +116,8 @@ public class BasicBuilder extends Unit
         while (true)
         {
             myRC.yield();
-            System.out.println("building mine");
+            // System.out.println("building mine");
+
         }
 
     }

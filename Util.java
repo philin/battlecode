@@ -40,12 +40,25 @@ public class Util
                 }
 
                 break;
-            case UnitCommon.HEAVY_ATTACKER:
+
+            case UnitCommon.BASIC_BUILDING:
+                //create the chassis
+                builder.build(UnitCommon.BASIC_BUILDING_CHASSIS, loc);
+                //add the components
+                for (int i = 0; i < UnitCommon.BASIC_BUILDING_COMPONENTS.length; ++i)
+                {
+                    addComponent(myRC,
+                                 builder,
+                                 UnitCommon.BASIC_BUILDING_COMPONENTS[i],
+                                 loc,
+                                 UnitCommon.BASIC_BUILDING_HEIGHT);
+                }
+
                 break;
             default:
                 break;
             }
-            System.out.println("BASIC_BUILDER built");
+            System.out.println("BASIC_BUILDING built");
         }
         catch(Exception ex)
         {
