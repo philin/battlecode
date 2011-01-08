@@ -51,11 +51,12 @@ public class BasicBuilder extends Unit
                 this.sensor = (SensorController)components[i];
             }
         }
-
         this.map = new Map(this.myRC);
-        this.navigator = new Navigator(this.myRC, this.motor, this.map);
-
+        addModule(map);
+        this.navigator = new Navigator(this.myRC, this.motor);
+        addModule(navigator);
         this.rand = new Random();
+        init();//initializes all added modules
     }
 
     public int getType()

@@ -24,12 +24,9 @@ public class Navigator implements Module{
     private Map map;
     private RobotController rc;
 
-    public Navigator(RobotController rc, MovementController motor, Map map){
+    public Navigator(RobotController rc, MovementController motor){
         this.rc = rc;
-        this.map = map;
         this.motor = motor;
-        currLocation = rc.getLocation();
-        currDirection = rc.getDirection();
     }
 
     //XXX this will become abstract soon
@@ -166,7 +163,12 @@ public class Navigator implements Module{
     }
 
     public void init(Planner planner){
-        //STUB
+        map = (Map)planner.getModule(ModuleType.MAPPING);
+        if(map==null){
+            System.out.println("Warning, there is no mapping module!");
+        }
+        currLocation = rc.getLocation();
+        currDirection = rc.getDirection();
     }
     public ModuleType getType(){
         return ModuleType.NAVIGATION;
