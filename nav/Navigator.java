@@ -13,6 +13,7 @@ public class Navigator{
     private int actionQueueLength;
     private MapLocation dest;
     private Direction desiredDirection;
+    private boolean enterDest=true;
     private MapLocation currLocation;
     private MovementController motor;
     private int waitCount=0;
@@ -99,16 +100,29 @@ public class Navigator{
             }
             actionQueueLength=i;
         }
+        if(!enterDest){
+            actionQueueLength--;
+        }
     }
 
-    public void setDestination(MapLocation loc, Direction direction){
+    public void setDestination(MapLocation loc, Direction direction,
+                               boolean enterDest){
         desiredDirection = direction;
         dest = loc;
+        this.enterDest = enterDest;
         doPathing();
     }
 
+    public void setDestination(MapLocation loc, boolean enterDest){
+        setDestination(loc,Direction.OMNI,enterDest);
+    }
+
+    public void setDestination(MapLocation loc, Direction direction){
+        setDestination(loc,direction,true);
+    }
+
     public void setDestination(MapLocation loc){
-        setDestination(loc,Direction.OMNI);
+        setDestination(loc,Direction.OMNI,true);
     }
 
     public void doMovement(){
@@ -117,12 +131,28 @@ public class Navigator{
                 return;
             }
             if(actionQueueOffset>=actionQueueLength){
-                if(!currLocation.equals(dest)){
-                    doPathing();
-                }
-                else{
+                if(enterDest){
+                    if(!currLocation.equals(dest)){
+                        doPathing();
+                    }
                     if(desiredDirection!=Direction.OMNI){
                         motor.setDirection(desiredDirection);
+                        //destination reached
+                        actionQueue=null;
+                    }
+                }
+                else{
+                    if(!currLocation.isAdjacentTo(dest)){
+                        doPathing();
+
+                    }
+                    else if(desiredDirection==Direction.OMNI){
+                        motor.setDirection(actionQueue[actionQueueLength]);
+                        actionQueue=null;
+                    }
+                    else{
+                        motor.setDirection(desiredDirection);
+                        actionQueue=null;
                     }
                 }
                 return;
