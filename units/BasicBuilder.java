@@ -14,7 +14,6 @@ public class BasicBuilder extends Unit
     private static final int MINECHECKDELAY = 5;
 
     //controllers
-    RobotController myRC = null;
     BuilderController builder = null;
     MovementController motor = null;
     SensorController sensor = null;
@@ -32,8 +31,31 @@ public class BasicBuilder extends Unit
     private int currentstate = 0; //default to foraging behavior
     private MapLocation targetMine = null;
 
-    public BasicBuilder()
+    public BasicBuilder(RobotController myRC)
     {
+        super(myRC);
+        ComponentController [] components = this.myRC.components();
+
+        for(int i = 0; i < components.length; ++i)
+        {
+            if(components[i].type() == ComponentType.CONSTRUCTOR)
+            {
+                this.builder = (BuilderController)components[i];
+            }
+            else if(components[i] instanceof MovementController)
+            {
+                this.motor = (MovementController)components[i];
+            }
+            else if(components[i].type() == ComponentType.SIGHT)
+            {
+                this.sensor = (SensorController)components[i];
+            }
+        }
+
+        this.map = new Map(this.myRC);
+        this.navigator = new Navigator(this.myRC, this.motor, this.map);
+
+        this.rand = new Random();
     }
 
     public int getType()
@@ -137,32 +159,8 @@ public class BasicBuilder extends Unit
         }
 
     }
-    public void runBehavior(RobotController myRC)
+    public void runBehavior()
     {
-        this.myRC = myRC;
-        ComponentController [] components = this.myRC.components();
-
-        for(int i = 0; i < components.length; ++i)
-        {
-            if(components[i].type() == ComponentType.CONSTRUCTOR)
-            {
-                this.builder = (BuilderController)components[i];
-            }
-            else if(components[i] instanceof MovementController)
-            {
-                this.motor = (MovementController)components[i];
-            }
-            else if(components[i].type() == ComponentType.SIGHT)
-            {
-                this.sensor = (SensorController)components[i];
-            }
-        }
-
-        this.map = new Map(this.myRC);
-        this.navigator = new Navigator(this.myRC, this.motor, this.map);
-
-        this.rand = new Random();
-
         while (true)
         {
             switch (this.currentstate)

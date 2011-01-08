@@ -52,9 +52,9 @@ public class RobotPlayer implements Runnable
                 if(hasSensor && hasBuilder)
                 {
 
-                    Unit basicBuilding = new BasicBuilding();
+                    Unit basicBuilding = new BasicBuilding(myRC);
                     this.unit = basicBuilding;
-                    this.unit.runBehavior(this.myRC);
+                    this.unit.runBehavior();
 
                 }
 
@@ -78,9 +78,9 @@ public class RobotPlayer implements Runnable
                 if(hasSensor && hasBuilder)
                 {
 
-                     Unit basicBuilder = new BasicBuilder();
+                     Unit basicBuilder = new BasicBuilder(myRC);
                      this.unit = basicBuilder;
-                     basicBuilder.runBehavior(myRC);
+                     basicBuilder.runBehavior();
                 }
             }
             myRC.yield();

@@ -7,20 +7,12 @@ import team046.*;
 
 public class BasicBuilding extends Unit
 {
-    public BasicBuilding()
+    BuilderController builder = null;
+    SensorController sensor = null;
+    public BasicBuilding(RobotController myRC)
     {
-    }
-
-    public int getType()
-    {
-        return UnitCommon.BASIC_BUILDING;
-    }
-
-    public void runBehavior(RobotController myRC)
-    {
+        super(myRC);
         ComponentController [] components = myRC.components();
-        BuilderController builder = null;
-        SensorController sensor = null;
         for(int i = 0; i < components.length; ++i)
         {
             if (components[i].type() == ComponentType.RECYCLER)
@@ -33,6 +25,16 @@ public class BasicBuilding extends Unit
 
             }
         }
+
+    }
+
+    public int getType()
+    {
+        return UnitCommon.BASIC_BUILDING;
+    }
+
+    public void runBehavior()
+    {
         while(true)
         {
             if(myRC.getTeamResources() > 180)
