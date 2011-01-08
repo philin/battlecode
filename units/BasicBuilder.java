@@ -11,7 +11,7 @@ import team046.*;
 public class BasicBuilder extends Unit
 {
     private int minecheckcount = 0;
-    private static final int MINECHECKDELAY = 3;
+    private static final int MINECHECKDELAY = 5;
 
     //controllers
     RobotController myRC = null;
@@ -49,7 +49,6 @@ public class BasicBuilder extends Unit
             while (true)
             {
                 myRC.yield();
-
                 navigator.doMovement();
                 changeCounter++;
                 if(changeCounter>10){
