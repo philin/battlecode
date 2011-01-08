@@ -5,33 +5,21 @@ import battlecode.common.*;
 
 public abstract class Planner{
 
-    protected Module navModule,mappingModule,commModule;
+    protected Module[] modules = new Module[ModuleType.NUM_OF_TYPES];
     protected LinkedList<IdleTask> tasks = new LinkedList<IdleTask>();
     protected int maxBytecodes = GameConstants.BYTECODE_LIMIT_BASE;
     //TODO, find out how many it actually takes
     private static final int DO_IDLE_OVERHEAD = 100;
     public void init(){
-        if(navModule!=null){
-            navModule.init(this);
-        }
-        if(mappingModule!=null){
-            mappingModule.init(this);
-        }
-        if(commModule!=null){
-            commModule.init(this);
+        for(Module m : modules){
+            if(m!=null){
+                m.init(this);
+            }
         }
     }
-
-    public Module getNavModule(){
-        return navModule;
+    public Module getModule(ModuleType type){
+        return modules[type.ordinal()];
     }
-    public Module getMappingModule(){
-        return mappingModule;
-    }
-    public Module getCommModule(){
-        return commModule;
-    }
-    //Add other module getters here
 
     public void addIdleTask(IdleTask task){
         tasks.offer(task);
