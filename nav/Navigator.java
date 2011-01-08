@@ -29,7 +29,6 @@ public class Navigator{
         this.motor = motor;
         currLocation = rc.getLocation();
         currDirection = rc.getDirection();
-
     }
 
     //XXX this will become abstract soon
@@ -180,5 +179,9 @@ public class Navigator{
         catch(GameActionException e){
             System.out.println("Navigator threw an exception, Round probably changed");
         }
+    }
+
+    boolean isAtDest(){
+        return actionQueue==null;
     }
 }
