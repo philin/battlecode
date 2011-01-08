@@ -29,7 +29,6 @@ public class RobotPlayer implements Runnable
 
     }
 
-
     /*
       robots must wait in this function until they have enough modules to fall into a
       unit category
