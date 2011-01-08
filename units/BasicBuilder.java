@@ -22,12 +22,14 @@ public class BasicBuilder extends Unit
     Navigator navigator = null;
     Random rand = null;
 
+
     //states
     private static final int FORAGING = 0;
     private static final int SPOTTED_MINE = 1;
     private static final int BUILDING_ON_MINE = 2;
 
     private int currentstate = 0; //default to foraging behavior
+    private MapLocation targetMine = null;
 
     public BasicBuilder()
     {
@@ -63,6 +65,14 @@ public class BasicBuilder extends Unit
                     Mine[] mines = this.sensor.senseNearbyGameObjects(Mine.class);
                     for(Mine m : mines){
                         MapLocation mineLoc = m.getLocation();
+                        if (this.sensor.senseObjectAtLocation(mineLoc, RobotLevel.ON_GROUND) == null)
+                        {
+                            //location is available
+                            this.currentstate = SPOTTED_MINE;
+                            System.out.println("spotted mine");
+                            targetMine = mineLoc;
+                            return;
+                        }
                     }
                     this.minecheckcount = 0;
                 }
@@ -82,11 +92,32 @@ public class BasicBuilder extends Unit
 
     private void spottedMineBehavior()
     {
+        navigator.setDestination(targetMine);
+        while (true)
+        {
+            myRC.yield();
+            if (!myRC.getLocation().equals(targetMine))
+            {
+                navigator.doMovement();
+            }
+            else
+            {
+                this.targetMine = null;
+                System.out.println("reached mine");
+                this.currentstate = BUILDING_ON_MINE;
+                return;
+            }
+        }
 
     }
 
     private void buildingOnMineBehavior()
     {
+        while (true)
+        {
+            myRC.yield();
+            System.out.println("building mine");
+        }
 
     }
     public void runBehavior(RobotController myRC)
@@ -124,9 +155,10 @@ public class BasicBuilder extends Unit
                 forageBehavior();
                 break;
             case SPOTTED_MINE:
-
+                spottedMineBehavior();
                 break;
             case BUILDING_ON_MINE:
+                buildingOnMineBehavior();
                 break;
             default:
                 this.myRC.yield();
