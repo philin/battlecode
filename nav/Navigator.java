@@ -2,11 +2,12 @@ package team046.nav;
 
 import battlecode.common.*;
 import team046.mapping.Map;
+import team046.*;
 
 //XXX currently does navigation for ground units.
 //I plan to make this abstract and create subclasses for ground and air units
 //Buildings don't need Navigators :)
-public class Navigator{
+public class Navigator implements Module{
     private Direction[] actionQueue;
     private Direction currDirection;
     private int actionQueueOffset;
@@ -162,5 +163,12 @@ public class Navigator{
 
     public boolean isAtDest(){
         return actionQueue==null;
+    }
+
+    public void init(Planner planner){
+        //STUB
+    }
+    public ModuleType getType(){
+        return ModuleType.NAVIGATION;
     }
 }
