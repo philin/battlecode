@@ -51,10 +51,10 @@ public class Map{
 
     public TerrainTile getTerrain(MapLocation loc){
         TerrainTile tile = rc.senseTerrainTile(loc);
-        if(tile!=null){
-            return tile;
-        }
-        int x = loc.x;
+        //if(tile!=null){
+        return tile;
+        //}
+        /*int x = loc.x;
         int y = loc.y;
         if(x<0 || x>=size || y<0 || y>=size){
             return TerrainTile.OFF_MAP;
@@ -88,6 +88,6 @@ public class Map{
             }
         }
         return map[x][y].terrain;
-
+        */
     }
 }

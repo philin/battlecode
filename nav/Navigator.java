@@ -20,8 +20,10 @@ public class Navigator{
     private static final int LONG_DISTANCE_THRESHOLD=25;
     private static final int MAX_ACTION_QUEUE_LENGTH=15;
     private Map map;
+    private RobotController rc;
 
     public Navigator(RobotController rc, MovementController motor, Map map){
+        this.rc = rc;
         this.map = map;
         this.motor = motor;
         currLocation = rc.getLocation();
@@ -39,6 +41,7 @@ public class Navigator{
     }
 
     private void doPathing(){
+        isPassable(currLocation);
         actionQueue = new Direction[MAX_ACTION_QUEUE_LENGTH];
         actionQueueOffset = 0;
         if(currLocation.distanceSquaredTo(dest)>LONG_DISTANCE_THRESHOLD){
@@ -62,9 +65,10 @@ public class Navigator{
                 }
                 //XXX cleanup
                 if(j==8){
+                    actionQueue[i]=curr.directionTo(dest);
+                    i++;
                     break;
                 }
-
             }
             actionQueueLength=i;
         }
@@ -88,9 +92,10 @@ public class Navigator{
                 }
                 //XXX cleanup
                 if(j==8){
+                    actionQueue[i]=curr.directionTo(dest);
+                    i++;
                     break;
                 }
-
             }
             actionQueueLength=i;
         }
@@ -127,6 +132,7 @@ public class Navigator{
                 if(motor.canMove(currDirection)){
                     motor.moveForward();
                     actionQueueOffset++;
+                    currLocation = currLocation.add(currDirection);
                 }
                 else{
                     waitCount++;
