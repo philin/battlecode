@@ -29,7 +29,8 @@ public abstract class Planner{
     public void addIdleTask(IdleTask task){
         tasks.offer(task);
     }
-    public void doIdleTask(){
+
+    public void doIdleTasks(){
         while(maxBytecodes-Clock.getBytecodeNum()>500+DO_IDLE_OVERHEAD){
             IdleTask currTask = tasks.peek();
             if(currTask==null){
