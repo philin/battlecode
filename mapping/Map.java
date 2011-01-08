@@ -2,7 +2,9 @@ package team046.mapping;
 
 import battlecode.common.*;
 
-public class Map{
+import team046.*;
+
+public class Map implements Module{
     public class LocationInfo{
         public TerrainTile terrain;
         public Mine mine;
@@ -203,5 +205,13 @@ public class Map{
 
     MapLocation getOffset(){
         return offset;
+    }
+
+    public void init(Planner planner){
+        //STUB
+    }
+
+    public ModuleType getType(){
+        return ModuleType.MAPPING;
     }
 }
