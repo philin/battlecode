@@ -1,6 +1,7 @@
 package team046.units;
 import battlecode.common.*;
-public abstract class Unit
+import team046.*;
+public abstract class Unit extends Planner
 {
 
     //basic unit function headers go here
