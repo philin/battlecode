@@ -18,7 +18,7 @@ public abstract class Planner{
         }
     }
 
-    protected Module addModule(Module module){
+    protected void addModule(Module module){
         modules[module.getType().ordinal()]=module;
     }
 
