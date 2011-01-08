@@ -44,61 +44,41 @@ public class Navigator{
         isPassable(currLocation);
         actionQueue = new Direction[MAX_ACTION_QUEUE_LENGTH];
         actionQueueOffset = 0;
-        if(currLocation.distanceSquaredTo(dest)>LONG_DISTANCE_THRESHOLD){
-            //TODO implement
-            //for now, it does the same thing as short distance planning
-            MapLocation curr = currLocation;
-            int i;
-            for(i=0;i<MAX_ACTION_QUEUE_LENGTH;i++){
-                if(curr.equals(dest)){
-                    break;
-                }
-                Direction dir = curr.directionTo(dest);
-                int j;
-                for(j=0;j<8;j++){
-                    if(isPassable(curr.add(dir))){
-                        actionQueue[i]=dir;
-                        curr = curr.add(dir);
-                        break;
-                    }
-                    dir = dir.rotateLeft();
-                }
-                //XXX cleanup
-                if(j==8){
+        //short distance planning
+        MapLocation curr = currLocation;
+        int i;
+        for(i=0;i<MAX_ACTION_QUEUE_LENGTH;i++){
+            if(curr.equals(dest)){
+                break;
+            }
+            Direction dir = curr.directionTo(dest);
+            int j;
+            if(map.getTerrain(curr.add(dir))==null){
+                //unknown stuff, stop here
+                if(i==0){
                     actionQueue[i]=curr.directionTo(dest);
                     i++;
-                    break;
                 }
+                break;
             }
-            actionQueueLength=i;
-        }
-        else{
-            //short distance planning
-            MapLocation curr = currLocation;
-            int i;
-            for(i=0;i<MAX_ACTION_QUEUE_LENGTH;i++){
-                if(curr.equals(dest)){
+            for(j=0;j<8;j++){
+                if(isPassable(curr.add(dir))){
+                    actionQueue[i]=dir;
+                    curr = curr.add(dir);
                     break;
                 }
-                Direction dir = curr.directionTo(dest);
-                int j;
-                for(j=0;j<8;j++){
-                    if(isPassable(curr.add(dir))){
-                        actionQueue[i]=dir;
-                        curr = curr.add(dir);
-                        break;
-                    }
-                    dir = dir.rotateLeft();
-                }
-                //XXX cleanup
-                if(j==8){
+                dir = dir.rotateLeft();
+            }
+            //XXX cleanup
+            if(j==8){
+                if(i==0){
                     actionQueue[i]=curr.directionTo(dest);
                     i++;
-                    break;
                 }
+                break;
             }
-            actionQueueLength=i;
         }
+        actionQueueLength=i;
         if(!enterDest){
             actionQueueLength--;
         }
@@ -143,7 +123,6 @@ public class Navigator{
                 else{
                     if(!currLocation.isAdjacentTo(dest)){
                         doPathing();
-
                     }
                     else if(desiredDirection==Direction.OMNI){
                         motor.setDirection(actionQueue[actionQueueLength]);
