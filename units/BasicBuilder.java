@@ -57,9 +57,10 @@ public class BasicBuilder extends Unit
                     changeCounter = 0;
                     navigator.setDestination(newLocation);
                 }
+
                 if ( this.minecheckcount == MINECHECKDELAY )
                 {
-                    Mine[] mines = sensor.senseNearbyGameObjects(Mine.class);
+                    Mine[] mines = this.sensor.senseNearbyGameObjects(Mine.class);
                     for(Mine m : mines){
                         MapLocation mineLoc = m.getLocation();
                     }
@@ -103,8 +104,9 @@ public class BasicBuilder extends Unit
             {
                 this.motor = (MovementController)components[i];
             }
-            else if(components[i] instanceof SensorController)
+            else if(components[i].type() == ComponentType.SIGHT)
             {
+                System.out.println("sensor found");
                 this.sensor = (SensorController)components[i];
             }
         }

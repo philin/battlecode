@@ -46,15 +46,25 @@ public class RobotPlayer implements Runnable
             else
             {
                 ComponentController [] components = myRC.components();
+                boolean hasSensor = false;
+                boolean hasBuilder = false;
                 for(int i = 0; i < components.length; ++i)
                 {
                     if(components[i].type() == ComponentType.CONSTRUCTOR)
                     {
-                        System.out.println("initiating BASIC_BUILDER");
-                        Unit basicBuilder = new BasicBuilder();
-                        this.unit = basicBuilder;
-                        basicBuilder.runBehavior(myRC);
+                        hasSensor = true;
                     }
+                    else if(components[i].type() == ComponentType.SIGHT)
+                    {
+                        hasBuilder = true;
+                    }
+                }
+                if(hasSensor && hasBuilder)
+                {
+                     System.out.println("initiating BASIC_BUILDER");
+                     Unit basicBuilder = new BasicBuilder();
+                     this.unit = basicBuilder;
+                     basicBuilder.runBehavior(myRC);
                 }
             }
             myRC.yield();
