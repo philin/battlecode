@@ -53,10 +53,6 @@ public class Navigator implements Module{
             int j;
             if(map.getTerrain(curr.add(dir))==null){
                 //unknown stuff, stop here
-                if(i==0){
-                    actionQueue[i]=curr.directionTo(dest);
-                    i++;
-                }
                 break;
             }
             for(j=0;j<8;j++){
@@ -69,10 +65,6 @@ public class Navigator implements Module{
             }
             //XXX cleanup
             if(j==8){
-                if(i==0){
-                    actionQueue[i]=curr.directionTo(dest);
-                    i++;
-                }
                 break;
             }
         }
