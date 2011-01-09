@@ -199,11 +199,11 @@ public class Map implements Module{
         return null;
     }
 
-    int getRealSize(){
+    public int getRealSize(){
         return realSize;
     }
 
-    MapLocation getOffset(){
+    public MapLocation getOffset(){
         return offset;
     }
 
