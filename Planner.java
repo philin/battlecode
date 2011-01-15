@@ -41,4 +41,9 @@ public abstract class Planner{
             }
         }
     }
+
+    public void receiveMessages(int moduleIds, Message message, int intOffset,
+                                int mapLocationOffset,int stringOffset){
+        //STUB
+    }
 }
