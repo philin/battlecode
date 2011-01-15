@@ -17,13 +17,17 @@ public class Communicator implements Module{
 
     private static final int MESSAGE_OVERHEAD=1;
 
+    public Communicator(RobotController rc, BroadcastController broadcaster){
+        this.myRC=rc;
+        this.broadcaster = broadcaster;
+    }
+
     public void addMessage(MessageData data){
         messages.add(data);
         intCount+=data.getIntCount()+MESSAGE_OVERHEAD;
         mapLocationCount+=data.getMapLocationCount();
         stringCount+=data.getStringCount();
     }
-
 
     //message format
     //integer data
