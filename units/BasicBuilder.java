@@ -10,8 +10,8 @@ import team046.*;
 
 public class BasicBuilder extends Unit
 {
-    private int minecheckcount = 0;
-    private static final int MINECHECKDELAY = 5;
+    private int scancount = 0;
+    private static final int SCAN_DELAY = 5;
 
     //controllers
     BuilderController builder = null;
@@ -27,9 +27,12 @@ public class BasicBuilder extends Unit
     private static final int FORAGING = 0;
     private static final int SPOTTED_MINE = 1;
     private static final int BUILDING_ON_MINE = 2;
+    private static final int SPOTTED_INACTIVE_ROBOT = 3;
+    private static final int ACTIVATING_ROBOT = 4;
 
     private int currentstate = 0; //default to foraging behavior
     private MapLocation targetMine = null;
+    private MapLocation targetUnit = null;
 
     public BasicBuilder(RobotController myRC)
     {
@@ -83,9 +86,11 @@ public class BasicBuilder extends Unit
                     navigator.setDestination(newLocation);
                 }
 
-                if ( this.minecheckcount == MINECHECKDELAY )
+                if ( this.scancount == SCAN_DELAY )
                 {
+
                     Mine[] mines = this.sensor.senseNearbyGameObjects(Mine.class);
+
                     for(Mine m : mines){
                         MapLocation mineLoc = m.getLocation();
                         if (this.sensor.senseObjectAtLocation(mineLoc, RobotLevel.ON_GROUND) == null)
@@ -96,11 +101,36 @@ public class BasicBuilder extends Unit
                             return;
                         }
                     }
-                    this.minecheckcount = 0;
+
+                    if (myRC.getTeamResources() > 100)
+                    {
+                        myRC.yield();
+                        Robot[] nearbyRobots = this.sensor.senseNearbyGameObjects(Robot.class);
+
+                        for(Robot r : nearbyRobots)
+                        {
+                            RobotInfo rinfo = this.sensor.senseRobotInfo(r);
+                            //if allied and off
+                            if(myRC.getTeam() == rinfo.robot.getTeam()
+                               && !rinfo.on
+                               && rinfo.robot.getRobotLevel() == RobotLevel.ON_GROUND)
+                            {
+                                //if robot is inactive
+                                this.targetUnit = rinfo.location;
+                                this.currentstate = SPOTTED_INACTIVE_ROBOT;
+
+                                return;
+                            }
+                        }
+                        //didn't find any inactive robots
+                        //yield just in case we're low on bytecode
+
+                    }
+                    this.scancount = 0;
                 }
                 else
                 {
-                    this.minecheckcount++;
+                    this.scancount++;
                 }
 
 
@@ -134,36 +164,86 @@ public class BasicBuilder extends Unit
 
     private void buildingOnMineBehavior()
     {
+        myRC.yield();
+        try{
+            if (myRC.getTeamResources() > Chassis.BUILDING.cost + 10 &&
+                this.sensor.senseObjectAtLocation(this.targetMine, RobotLevel.ON_GROUND) == null)
+            {
+
+                Util.buildUnit(this.myRC,
+                               this.builder,
+                               UnitCommon.BASIC_BUILDING,
+                               this.targetMine);
+
+            }
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+
+        this.targetMine = null;
+        this.currentstate = FORAGING;
+    }
+
+    private void spottedInactiveRobotBehavior()
+    {
+        navigator.setDestination(targetUnit, false);
         while (true)
         {
             myRC.yield();
-            try{
-                if (myRC.getTeamResources() > Chassis.BUILDING.cost + 10 &&
-                    this.sensor.senseObjectAtLocation(this.targetMine, RobotLevel.ON_GROUND) == null)
-                {
 
-                    Util.buildUnit(this.myRC,
-                                   this.builder,
-                                   UnitCommon.BASIC_BUILDING,
-                                   this.targetMine);
-
-                }
-            }
-            catch (Exception ex)
+            if (!this.navigator.isAtDest())
             {
-                ex.printStackTrace();
+                navigator.doMovement();
             }
-
-            this.targetMine = null;
-            this.currentstate = FORAGING;
-            return;
+            else
+            {
+                this.currentstate = ACTIVATING_ROBOT;
+                return;
+            }
         }
 
+
     }
+
+    private void activatingRobotBehavior()
+    {
+        myRC.yield();
+        try{
+            if(myRC.getTeamResources() > 100 && myRC.getLocation().distanceSquaredTo(targetUnit) == 1)
+            {
+                GameObject object = this.sensor.senseObjectAtLocation(
+                    this.targetUnit,
+                    RobotLevel.ON_GROUND
+                    );
+
+                //check if robot is still there
+                if( object != null && object instanceof Robot)
+                {
+                    RobotInfo rinfo = this.sensor.senseRobotInfo((Robot)object);
+                    if(!rinfo.on)
+                    {
+                        myRC.turnOn(targetUnit, RobotLevel.ON_GROUND);
+                    }
+                }
+            }
+
+        }
+        catch( Exception ex)
+        {
+            ex.printStackTrace();
+        }
+
+        this.targetUnit = null;
+        this.currentstate = FORAGING;
+    }
+
     public void runBehavior()
     {
         while (true)
         {
+
             switch (this.currentstate)
             {
             case FORAGING:
@@ -174,6 +254,12 @@ public class BasicBuilder extends Unit
                 break;
             case BUILDING_ON_MINE:
                 buildingOnMineBehavior();
+                break;
+            case SPOTTED_INACTIVE_ROBOT:
+                spottedInactiveRobotBehavior();
+                break;
+            case ACTIVATING_ROBOT:
+                activatingRobotBehavior();
                 break;
             default:
                 this.myRC.yield();

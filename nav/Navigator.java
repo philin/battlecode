@@ -45,6 +45,7 @@ public class Navigator implements Module{
         //short distance planning
         MapLocation curr = currLocation;
         int i;
+        rc.yield();
         for(i=0;i<MAX_ACTION_QUEUE_LENGTH;i++){
             if(curr.equals(dest)){
                 break;
@@ -72,6 +73,7 @@ public class Navigator implements Module{
         if(!enterDest){
             actionQueueLength--;
         }
+        rc.yield();
     }
 
     public void setDestination(MapLocation loc, Direction direction,
@@ -125,9 +127,14 @@ public class Navigator implements Module{
                 }
                 return;
             }
-            if(actionQueue[actionQueueOffset]==currDirection){
+            if(actionQueue[actionQueueOffset]==currDirection
+               && actionQueue[actionQueueOffset] == rc.getDirection()){
                 //move forward
                 if(motor.canMove(currDirection)){
+                    if(rc.getDirection() != currDirection)
+                    {
+                        System.out.println("not matiching!!!!");
+                    }
                     motor.moveForward();
                     actionQueueOffset++;
                     currLocation = currLocation.add(currDirection);
@@ -147,6 +154,7 @@ public class Navigator implements Module{
         }
         catch(GameActionException e){
             System.out.println("Navigator threw an exception, Round probably changed");
+            e.printStackTrace();
         }
     }
 
