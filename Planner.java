@@ -32,12 +32,12 @@ public abstract class Planner{
 
     public void doIdleTasks(){
         while(maxBytecodes-Clock.getBytecodeNum()>500+DO_IDLE_OVERHEAD){
-            IdleTask currTask = tasks.peek();
+            IdleTask currTask = tasks.pop();
             if(currTask==null){
                 break;
             }
             if(currTask.executeTask()){
-                tasks.remove();
+                tasks.offer(currTask);
             }
         }
     }

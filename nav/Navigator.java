@@ -1,5 +1,7 @@
 package team046.nav;
 
+import java.util.LinkedList;
+
 import battlecode.common.*;
 import team046.mapping.Map;
 import team046.*;
@@ -8,10 +10,13 @@ import team046.*;
 //I plan to make this abstract and create subclasses for ground and air units
 //Buildings don't need Navigators :)
 public class Navigator implements Module{
+    private BlockedMap blockedMap;
+    private boolean[][] blacklistedBlocks;
     private Direction[] actionQueue;
     private Direction currDirection;
     private int actionQueueOffset;
     private int actionQueueLength;
+    private MapLocation prevDest;
     private MapLocation dest;
     private Direction desiredDirection;
     private boolean enterDest=true;
@@ -21,6 +26,7 @@ public class Navigator implements Module{
     private static final int STUCK_THRESHOLD=10;
     private static final int LONG_DISTANCE_THRESHOLD=25;
     private static final int MAX_ACTION_QUEUE_LENGTH=15;
+    private Planner planner;
     private Map map;
     private RobotController rc;
 
@@ -38,11 +44,7 @@ public class Navigator implements Module{
         return map.getTerrain(loc)==TerrainTile.LAND;
     }
 
-    private void doPathing(){
-        isPassable(currLocation);
-        actionQueue = new Direction[MAX_ACTION_QUEUE_LENGTH];
-        actionQueueOffset = 0;
-        //short distance planning
+    private void doShortDistancePathing(MapLocation dest, boolean enterDest){
         MapLocation curr = currLocation;
         int i;
         //rc.yield();
@@ -74,6 +76,127 @@ public class Navigator implements Module{
             actionQueueLength--;
         }
         //rc.yield();
+    }
+    //put here so we don't have to reallocate every time
+    LinkedList<int[]> wavefrontQueue = new LinkedList<int[]>();
+    private static final double SQRT_2 = Math.sqrt(2);
+    double[][] wavefrontCostMap;
+    //x,y should be in blockMap coordinates
+    private void runWavefront(int destX, int destY, int startX, int startY){
+        //this clears the array
+        for(int i=0;i<wavefrontCostMap.length;i++){
+            wavefrontCostMap[i]=new double[wavefrontCostMap.length];
+        }
+        wavefrontCostMap[destX][destY]=1;
+        wavefrontQueue.clear();
+        wavefrontQueue.add(new int[]{destX,destY});
+        do{
+            double currCost = wavefrontCostMap[destX][destY];
+            double cost;
+            //North
+            cost = blockedMap.getCost(destX,destY-1);
+            if(!blacklistedBlocks[destX][destY-1]){
+                if(cost>=0){
+                    cost+=currCost;
+                    if(wavefrontCostMap[destX][destY-1]==0 ||
+                       wavefrontCostMap[destX][destY-1]>cost){
+                        wavefrontCostMap[destX][destY-1]=cost;
+                    }
+                }
+            }
+            //NorthEast
+            if(!blacklistedBlocks[destX+1][destY-1]){
+                cost = blockedMap.getCost(destX+1,destY-1)*SQRT_2;
+                if(cost>=0){
+                    cost+=currCost;
+                    if(wavefrontCostMap[destX+1][destY-1]==0 ||
+                       wavefrontCostMap[destX+1][destY-1]>cost){
+                        wavefrontCostMap[destX+1][destY-1]=cost;
+                    }
+                }
+            }
+            //East
+            if(!blacklistedBlocks[destX+1][destY]){
+                cost = blockedMap.getCost(destX+1,destY);
+                if(cost>=0){
+                    cost+=currCost;
+                    if(wavefrontCostMap[destX+1][destY]==0 ||
+                       wavefrontCostMap[destX+1][destY]>cost){
+                        wavefrontCostMap[destX+1][destY]=cost;
+                    }
+                }
+            }
+            //SouthEast
+            if(!blacklistedBlocks[destX+1][destY+1]){
+                cost = blockedMap.getCost(destX+1,destY+1)*SQRT_2;
+                if(cost>=0){
+                    cost+=currCost;
+                    if(wavefrontCostMap[destX+1][destY+1]==0 ||
+                       wavefrontCostMap[destX+1][destY+1]>cost){
+                        wavefrontCostMap[destX+1][destY+1]=cost;
+                    }
+                }
+            }
+            //South
+            if(!blacklistedBlocks[destX][destY+1]){
+                cost = blockedMap.getCost(destX,destY+1);
+                if(cost>=0){
+                    cost+=currCost;
+                    if(wavefrontCostMap[destX][destY+1]==0 ||
+                       wavefrontCostMap[destX][destY+1]>cost){
+                        wavefrontCostMap[destX][destY+1]=cost;
+                    }
+                }
+            }
+            //SouthWest
+            if(!blacklistedBlocks[destX-1][destY+1]){
+                cost = blockedMap.getCost(destX-1,destY+1)*SQRT_2;
+                if(cost>=0){
+                    cost+=currCost;
+                    if(wavefrontCostMap[destX+1][destY+1]==0 ||
+                       wavefrontCostMap[destX-1][destY+1]>cost){
+                        wavefrontCostMap[destX-1][destY+1]=cost;
+                    }
+                }
+            }
+            //West
+            if(!blacklistedBlocks[destX-1][destY]){
+                cost = blockedMap.getCost(destX-1,destY);
+                if(cost>=0){
+                    cost+=currCost;
+                    if(wavefrontCostMap[destX-1][destY]==0 ||
+                       wavefrontCostMap[destX-1][destY]>cost){
+                        wavefrontCostMap[destX-1][destY]=cost;
+                    }
+                }
+            }
+            //NorthWest
+            if(!blacklistedBlocks[destX-1][destY-1]){
+                cost = blockedMap.getCost(destX-1,destY-1)*SQRT_2;
+                if(cost>=0){
+                    cost+=currCost;
+                    if(wavefrontCostMap[destX-1][destY-1]==0 ||
+                       wavefrontCostMap[destX-1][destY-1]>cost){
+                        wavefrontCostMap[destX-1][destY-1]=cost;
+                    }
+                }
+            }
+        }while(!wavefrontQueue.isEmpty());
+    }
+
+    private void doPathing(){
+        isPassable(currLocation);
+        actionQueue = new Direction[MAX_ACTION_QUEUE_LENGTH];
+        actionQueueOffset = 0;
+        MapLocation tempDest = null;
+        if(currLocation.distanceSquaredTo(dest)>LONG_DISTANCE_THRESHOLD){
+            if(prevDest!=dest){
+                //new destination, redo wavefront
+                prevDest=dest;
+            }
+        }
+        //short distance planning
+        doShortDistancePathing(tempDest,enterDest);
     }
 
     public void setDestination(MapLocation loc, Direction direction,
@@ -164,13 +287,23 @@ public class Navigator implements Module{
         return actionQueue==null && !motor.isActive();
     }
 
+    private void wavefrontInit(){
+        new BlockedMap(map,planner);
+    }
+
     public void init(Planner planner){
+        this.planner = planner;
         map = (Map)planner.getModule(ModuleType.MAPPING);
         if(map==null){
             System.out.println("Warning, there is no mapping module!");
         }
         currLocation = rc.getLocation();
         currDirection = rc.getDirection();
+        MapLocation offset = map.getOffset();
+        if(offset!=null){
+            //initialize the wavefront map
+            wavefrontInit();
+        }
     }
     public ModuleType getType(){
         return ModuleType.NAVIGATION;
