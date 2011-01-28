@@ -45,7 +45,7 @@ public class Navigator implements Module{
         //short distance planning
         MapLocation curr = currLocation;
         int i;
-        rc.yield();
+        //rc.yield();
         for(i=0;i<MAX_ACTION_QUEUE_LENGTH;i++){
             if(curr.equals(dest)){
                 break;
@@ -73,7 +73,7 @@ public class Navigator implements Module{
         if(!enterDest){
             actionQueueLength--;
         }
-        rc.yield();
+        //rc.yield();
     }
 
     public void setDestination(MapLocation loc, Direction direction,
@@ -106,8 +106,9 @@ public class Navigator implements Module{
                     if(!currLocation.equals(dest)){
                         doPathing();
                     }
-                    if(desiredDirection!=Direction.OMNI){
+                    else if(desiredDirection!=Direction.OMNI){
                         motor.setDirection(desiredDirection);
+                        currDirection = desiredDirection;
                         //destination reached
                         actionQueue=null;
                     }
@@ -118,17 +119,18 @@ public class Navigator implements Module{
                     }
                     else if(desiredDirection==Direction.OMNI){
                         motor.setDirection(actionQueue[actionQueueLength]);
+                        currDirection = actionQueue[actionQueueOffset];
                         actionQueue=null;
                     }
                     else{
                         motor.setDirection(desiredDirection);
+                        currDirection = desiredDirection;
                         actionQueue=null;
                     }
                 }
                 return;
             }
-            if(actionQueue[actionQueueOffset]==currDirection
-               && actionQueue[actionQueueOffset] == rc.getDirection()){
+            if(actionQueue[actionQueueOffset]==currDirection){
                 //move forward
                 if(motor.canMove(currDirection)){
                     if(rc.getDirection() != currDirection)
@@ -159,7 +161,7 @@ public class Navigator implements Module{
     }
 
     public boolean isAtDest(){
-        return actionQueue==null;
+        return actionQueue==null && !motor.isActive();
     }
 
     public void init(Planner planner){
