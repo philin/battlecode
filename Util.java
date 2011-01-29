@@ -62,6 +62,8 @@ public class Util
         }
         catch(Exception ex)
         {
+
+            System.out.println(loc.directionTo(myRC.getLocation()));
             ex.printStackTrace();
         }
     }

@@ -9,6 +9,9 @@ public class BasicBuilding extends Unit
 {
     BuilderController builder = null;
     SensorController sensor = null;
+    SensorController radarsensor = null;
+    WeaponController weapon = null;
+    MovementController motor = null;
     public BasicBuilding(RobotController myRC)
     {
         super(myRC);
@@ -33,30 +36,80 @@ public class BasicBuilding extends Unit
         return UnitCommon.BASIC_BUILDING;
     }
 
+    private void armSelf()
+    {
+        try{
+            Util.addComponent(myRC,
+                              builder,
+                              ComponentType.RADAR,
+                              myRC.getLocation(),
+                              RobotLevel.ON_GROUND);
+            myRC.yield();
+            Util.addComponent(myRC,
+                              builder,
+                              ComponentType.BLASTER,
+                              myRC.getLocation(),
+                              RobotLevel.ON_GROUND);
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+        }
+
+        for(ComponentController comp : myRC.components())
+        {
+            if(comp.type() == ComponentType.RADAR)
+            {
+                radarsensor = (SensorController)comp;
+            }
+            if(comp.type() == ComponentType.BLASTER)
+            {
+                weapon = (WeaponController)comp;
+            }
+            if(comp instanceof MovementController)
+            {
+                motor = (MovementController)comp;
+            }
+        }
+    }
+
     public void runBehavior()
     {
+        armSelf();
         while(true)
         {
-            if(myRC.getTeamResources() > 180)
+            myRC.yield();
+            if(myRC.getTeamResources() > 250 )
             {
+                try{
+                    motor.setDirection(Direction.WEST);
+                }
+                catch(Exception ex)
+                {
+                }
                 MapLocation loc = myRC.getLocation();
                 try{
                     //find the first available tile
-                    if(!Util.isOccupied(sensor, loc.add(Direction.NORTH)))
+
+                    if(builder.canBuild(UnitCommon.BASIC_BUILDER_CHASSIS,
+                                        loc.add(Direction.NORTH)))
                     {
                         loc = loc.add(Direction.NORTH);
                     }
-                    else if(!Util.isOccupied(sensor, loc.add(Direction.EAST)))
+                    else if(builder.canBuild(UnitCommon.BASIC_BUILDER_CHASSIS,
+                                                loc.add(Direction.EAST)))
                     {
                         loc = loc.add(Direction.EAST);
                     }
-                    else if(!Util.isOccupied(sensor, loc.add(Direction.SOUTH)))
-                    {
-                        loc = loc.add(Direction.SOUTH);
-                    }
-                    else if(!Util.isOccupied(sensor, loc.add(Direction.WEST)))
+                    else if(builder.canBuild(UnitCommon.BASIC_BUILDER_CHASSIS,
+                                             loc.add(Direction.WEST)))
                     {
                         loc = loc.add(Direction.WEST);
+                    }
+                    else if(builder.canBuild(UnitCommon.BASIC_BUILDER_CHASSIS,
+                                             loc.add(Direction.SOUTH)))
+                    {
+                        loc = loc.add(Direction.SOUTH);
                     }
                     else
                     {
@@ -75,7 +128,7 @@ public class BasicBuilding extends Unit
                     ex.printStackTrace();
                 }
             }
-            myRC.yield();
+
         }
 
     }

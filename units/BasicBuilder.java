@@ -79,9 +79,18 @@ public class BasicBuilder extends Unit
                 changeCounter++;
                 if(changeCounter>10){
                     //choose another location
+                    int dx = 5*(rand.nextInt(10)-4);
+                    int dy = 5*(rand.nextInt(10)-4);
                     MapLocation newLocation
-                        = myRC.getLocation().add(5*(rand.nextInt(10)-4),
-                                                 5*(rand.nextInt(10)-4));
+                        = myRC.getLocation().add(dx, dy);
+
+                    Direction currdirection = myRC.getDirection();
+                    if(currdirection == myRC.getLocation().directionTo(newLocation).opposite())
+                    {
+                        dx = -dx;
+                        dy = -dy;
+                        newLocation = myRC.getLocation().add(dx, dy);
+                    }
                     changeCounter = 0;
                     navigator.setDestination(newLocation);
                 }
