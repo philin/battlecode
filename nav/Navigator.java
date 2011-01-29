@@ -1,5 +1,7 @@
 package team046.nav;
 
+import java.util.LinkedList;
+
 import battlecode.common.*;
 import team046.mapping.Map;
 import team046.*;
@@ -8,10 +10,13 @@ import team046.*;
 //I plan to make this abstract and create subclasses for ground and air units
 //Buildings don't need Navigators :)
 public class Navigator implements Module{
+    private BlockedMap blockedMap;
+    private boolean[][] blacklistedBlocks;
     private Direction[] actionQueue;
     private Direction currDirection;
     private int actionQueueOffset;
     private int actionQueueLength;
+    private MapLocation prevDest;
     private MapLocation dest;
     private Direction desiredDirection;
     private boolean enterDest=true;
@@ -21,6 +26,7 @@ public class Navigator implements Module{
     private static final int STUCK_THRESHOLD=10;
     private static final int LONG_DISTANCE_THRESHOLD=25;
     private static final int MAX_ACTION_QUEUE_LENGTH=15;
+    private Planner planner;
     private Map map;
     private RobotController rc;
 
@@ -38,14 +44,9 @@ public class Navigator implements Module{
         return map.getTerrain(loc)==TerrainTile.LAND;
     }
 
-    private void doPathing(){
-        isPassable(currLocation);
-        actionQueue = new Direction[MAX_ACTION_QUEUE_LENGTH];
-        actionQueueOffset = 0;
-        //short distance planning
+    private void doShortDistancePathing(MapLocation dest, boolean enterDest){
         MapLocation curr = currLocation;
         int i;
-        //rc.yield();
         for(i=0;i<MAX_ACTION_QUEUE_LENGTH;i++){
             if(curr.equals(dest)){
                 break;
@@ -73,7 +74,23 @@ public class Navigator implements Module{
         if(!enterDest){
             actionQueueLength--;
         }
-        //rc.yield();
+    }
+
+    private void doPathing(){
+        isPassable(currLocation);
+        actionQueue = new Direction[MAX_ACTION_QUEUE_LENGTH];
+        actionQueueOffset = 0;
+        MapLocation tempDest = dest;
+        if(currLocation.distanceSquaredTo(dest)>LONG_DISTANCE_THRESHOLD){
+            if(prevDest!=dest){
+                //new destination, redo wavefront
+                prevDest=dest;
+            }
+        }
+        //short distance planning
+        if(tempDest!=null){
+            doShortDistancePathing(tempDest,enterDest);
+        }
     }
 
     public void setDestination(MapLocation loc, Direction direction,
@@ -165,12 +182,18 @@ public class Navigator implements Module{
     }
 
     public void init(Planner planner){
+        this.planner = planner;
         map = (Map)planner.getModule(ModuleType.MAPPING);
         if(map==null){
             System.out.println("Warning, there is no mapping module!");
         }
         currLocation = rc.getLocation();
         currDirection = rc.getDirection();
+        MapLocation offset = map.getOffset();
+        if(offset!=null){
+            //initialize the wavefront map
+            //wavefrontInit();
+        }
     }
     public ModuleType getType(){
         return ModuleType.NAVIGATION;

@@ -64,6 +64,33 @@ public class Map implements Module{
         map[x][y].terrain = tile;
     }
 
+    public TerrainTile getTerrainQuick(MapLocation loc){
+        int x,y;
+        if(isOffset){
+            x = loc.x-offset.x;
+            y = loc.y-offset.y;
+            if(x<0 || x>=size || y<0 || y>=size){
+                return TerrainTile.OFF_MAP;
+            }
+        }
+        else{
+            x = loc.x%MAX_MAP_SIZE;
+            y = loc.y%MAX_MAP_SIZE;
+            if(offset!=null){
+                int otherX = loc.x-offset.x;
+                int otherY = loc.y-offset.y;
+                if(otherX<0 || otherX>size || otherY<0 || otherY>size){
+                    return TerrainTile.OFF_MAP;
+                }
+            }
+        }
+        //x and y are now in array coordinates
+        if(map[x][y]!=null){
+            return map[x][y].terrain;
+        }
+        return rc.senseTerrainTile(loc);
+    }
+
     public TerrainTile getTerrain(int x, int y){
         MapLocation loc = new MapLocation(x,y);
         return getTerrain(loc);

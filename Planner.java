@@ -31,13 +31,12 @@ public abstract class Planner{
     }
 
     public void doIdleTasks(){
-        while(maxBytecodes-Clock.getBytecodeNum()>500+DO_IDLE_OVERHEAD){
-            IdleTask currTask = tasks.peek();
-            if(currTask==null){
-                break;
-            }
+        int length = tasks.size();
+        while(maxBytecodes-Clock.getBytecodeNum()>500+DO_IDLE_OVERHEAD && length>0){
+            length--;
+            IdleTask currTask = tasks.pop();
             if(currTask.executeTask()){
-                tasks.remove();
+                tasks.offer(currTask);
             }
         }
     }

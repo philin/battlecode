@@ -274,6 +274,7 @@ public class BasicBuilder extends Unit
                 this.myRC.yield();
                 break;
             }
+            doIdleTasks();
         }
 
     }
