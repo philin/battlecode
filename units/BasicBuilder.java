@@ -11,7 +11,7 @@ import team046.*;
 public class BasicBuilder extends Unit
 {
     private int scancount = 0;
-    private static final int SCAN_DELAY = 5;
+    private static final int SCAN_DELAY = 30;
 
     //controllers
     BuilderController builder = null;
@@ -79,8 +79,8 @@ public class BasicBuilder extends Unit
                 changeCounter++;
                 if(changeCounter>10){
                     //choose another location
-                    int dx = 5*(rand.nextInt(10)-4);
-                    int dy = 5*(rand.nextInt(10)-4);
+                    int dx = 10*(rand.nextInt(10)-4);
+                    int dy = 10*(rand.nextInt(10)-4);
                     MapLocation newLocation
                         = myRC.getLocation().add(dx, dy);
 
@@ -153,6 +153,7 @@ public class BasicBuilder extends Unit
 
     private void spottedMineBehavior()
     {
+        int exitcount = 0;
         navigator.setDestination(targetMine, false);
         while (true)
         {
@@ -167,6 +168,12 @@ public class BasicBuilder extends Unit
                 this.currentstate = BUILDING_ON_MINE;
                 return;
             }
+            exitcount++;
+            if(exitcount > 30)
+            {
+                this.currentstate = FORAGING;
+                return;
+            }
         }
 
     }
@@ -175,7 +182,7 @@ public class BasicBuilder extends Unit
     {
         myRC.yield();
         try{
-            if (myRC.getTeamResources() > Chassis.BUILDING.cost + 10 &&
+            if (myRC.getTeamResources() > Chassis.BUILDING.cost  &&
                 this.sensor.senseObjectAtLocation(this.targetMine, RobotLevel.ON_GROUND) == null)
             {
 
