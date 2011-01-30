@@ -11,7 +11,7 @@ import team046.*;
 public class BasicBuilder extends Unit
 {
     private int scancount = 0;
-    private static final int SCAN_DELAY = 30;
+    private static final int SCAN_DELAY = 10;
 
     //controllers
     BuilderController builder = null;
@@ -93,6 +93,7 @@ public class BasicBuilder extends Unit
                     }
                     changeCounter = 0;
                     navigator.setDestination(newLocation);
+                    myRC.yield();
                 }
 
                 if ( this.scancount == SCAN_DELAY )
@@ -169,7 +170,7 @@ public class BasicBuilder extends Unit
                 return;
             }
             exitcount++;
-            if(exitcount > 30)
+            if(exitcount > 20)
             {
                 this.currentstate = FORAGING;
                 return;
@@ -183,7 +184,7 @@ public class BasicBuilder extends Unit
         myRC.yield();
         try{
             if (myRC.getTeamResources() > Chassis.BUILDING.cost  &&
-                this.sensor.senseObjectAtLocation(this.targetMine, RobotLevel.ON_GROUND) == null)
+                this.builder.canBuild(UnitCommon.BASIC_BUILDING_CHASSIS,this.targetMine))
             {
 
                 Util.buildUnit(this.myRC,
