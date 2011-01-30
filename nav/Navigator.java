@@ -70,9 +70,15 @@ public class Navigator implements Module{
                 break;
             }
         }
-        actionQueueLength=i;
-        if(!enterDest){
-            actionQueueLength--;
+        if(i==0){
+            //nothing to do
+            actionQueue=null;
+        }
+        else{
+            actionQueueLength=i;
+            if(!enterDest){
+                actionQueueLength--;
+            }
         }
     }
 
