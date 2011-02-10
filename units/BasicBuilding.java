@@ -11,9 +11,11 @@ public class BasicBuilding extends Unit
     private static final int SELF_UPGRADE = 0;
     private static final int SCANNING = 1;
     private static final int ATTACKING = 2;
-    private static final int SPAWNING_BUILDER = 3;
+    private static final int SPAWNING_UNIT = 3;
 
     private static final int MAX_SPINS_PER_SCAN = 12;
+
+    private int attackerBuildCountdown = 2;
 
     private int currentstate;
     private MapLocation targetlocation = null;
@@ -137,7 +139,7 @@ public class BasicBuilding extends Unit
                 {
                     //goto build state
                     scanspincount = 0;
-                    currentstate = SPAWNING_BUILDER;
+                    currentstate = SPAWNING_UNIT;
                     return;
                 }
             }
@@ -201,7 +203,7 @@ public class BasicBuilding extends Unit
 
     }
 
-    private void spawningBuilderBehavior()
+    private void spawningUnitBehavior()
     {
 
         myRC.yield();
@@ -238,10 +240,22 @@ public class BasicBuilding extends Unit
                 }
                 if (loc != null)
                 {
-                    Util.buildUnit(myRC,
-                                   builder,
-                                   UnitCommon.BASIC_BUILDER,
-                                   loc);
+                    if(attackerBuildCountdown == 0)
+                    {
+                        Util.buildUnit(myRC,
+                                       builder,
+                                       UnitCommon.BASIC_ATTACKER,
+                                       loc);
+                        attackerBuildCountdown = 3;
+                    }
+                    else
+                    {
+                        attackerBuildCountdown--;
+                        Util.buildUnit(myRC,
+                                       builder,
+                                       UnitCommon.BASIC_BUILDER,
+                                       loc);
+                    }
                 }
             }
             catch (Exception ex)
@@ -268,8 +282,8 @@ public class BasicBuilding extends Unit
             case ATTACKING:
                 attackingBehavior();
                 break;
-            case SPAWNING_BUILDER:
-                spawningBuilderBehavior();
+            case SPAWNING_UNIT:
+                spawningUnitBehavior();
                 break;
             default:
                 myRC.yield();

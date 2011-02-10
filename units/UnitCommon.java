@@ -8,6 +8,7 @@ public final class UnitCommon
     /** unit type values **/
     public static final int BASIC_BUILDER = 0;
     public static final int BASIC_BUILDING = 1;
+    public static final int BASIC_ATTACKER = 2;
 
     /** unit construction definitions **/
     public static final Chassis BASIC_BUILDER_CHASSIS = Chassis.LIGHT;
@@ -19,6 +20,10 @@ public final class UnitCommon
     public static final RobotLevel BASIC_BUILDING_HEIGHT = RobotLevel.ON_GROUND;
     public static final ComponentType[] BASIC_BUILDING_COMPONENTS = { ComponentType.RECYCLER};
 
+
+    public static final Chassis BASIC_ATTACKER_CHASSIS = Chassis.LIGHT;
+    public static final RobotLevel BASIC_ATTACKER_HEIGHT = RobotLevel.ON_GROUND;
+    public static final ComponentType[] BASIC_ATTACKER_COMPONENTS = { ComponentType.BLASTER, ComponentType.RADAR };
 
 
 }

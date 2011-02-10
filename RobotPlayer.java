@@ -62,25 +62,40 @@ public class RobotPlayer implements Runnable
             else
             {
 
-                boolean hasSensor = false;
-                boolean hasBuilder = false;
+                boolean hasSight = false;
+                boolean hasRadar = false;
+                boolean hasConstructor = false;
+                boolean hasRailgun = false;
                 for(int i = 0; i < components.length; ++i)
                 {
                     if(components[i].type() == ComponentType.CONSTRUCTOR)
                     {
-                        hasSensor = true;
+                        hasConstructor = true;
                     }
                     else if(components[i].type() == ComponentType.SIGHT)
                     {
-                        hasBuilder = true;
+                        hasSight = true;
+                    }
+                    else if(components[i].type() == ComponentType.BLASTER)
+                    {
+                        hasRailgun = true;
+                    }
+                    else if(components[i].type() == ComponentType.RADAR)
+                    {
+                        hasRadar = true;
                     }
                 }
-                if(hasSensor && hasBuilder)
+                if(hasSight && hasConstructor && !hasRailgun)
                 {
-
                      Unit basicBuilder = new BasicBuilder(myRC);
                      this.unit = basicBuilder;
                      basicBuilder.runBehavior();
+                }
+                if(hasRadar && hasRailgun && !hasConstructor)
+                {
+                    Unit railgunAttacker = new BasicAttacker(myRC);
+                    this.unit = railgunAttacker;
+                    railgunAttacker.runBehavior();
                 }
             }
             myRC.yield();

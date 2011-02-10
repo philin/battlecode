@@ -26,6 +26,18 @@ public class Util
             }
             switch (type)
             {
+            case UnitCommon.BASIC_ATTACKER:
+                builder.build(UnitCommon.BASIC_ATTACKER_CHASSIS, loc);
+                //add the components
+                for (int i = 0; i < UnitCommon.BASIC_ATTACKER_COMPONENTS.length; ++i)
+                {
+                    addComponent(myRC,
+                                 builder,
+                                 UnitCommon.BASIC_ATTACKER_COMPONENTS[i],
+                                 loc,
+                                 UnitCommon.BASIC_ATTACKER_HEIGHT);
+                }
+                break;
             case UnitCommon.BASIC_BUILDER:
                 //create the chassis
                 builder.build(UnitCommon.BASIC_BUILDER_CHASSIS, loc);
