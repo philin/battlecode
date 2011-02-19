@@ -106,5 +106,13 @@ public class Util
 
     }
 
-
+    //returns NORTH for input 0, increases clockwise
+    public static Direction intAsDirection(int dir)
+    {
+        return Direction.values()[dir];
+    }
+    //included for completeness
+    public static int directionAsInt(Direction dir){
+        return dir.ordinal();
+    }
 }
