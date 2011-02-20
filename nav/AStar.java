@@ -107,7 +107,6 @@ public class AStar implements PathPlanner{
                 doNeighbors(node);
             }
             else{
-                System.out.println(steps);
                 //reconstruct the path
                 Map.Node currNode = node;
                 Direction[] path = new Direction[node.navInfo.length];
