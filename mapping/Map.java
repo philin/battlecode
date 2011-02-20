@@ -21,14 +21,19 @@ public class Map implements Module{
             this.mine = mine;
         }
         public void updateTerrain(TerrainTile tile){
+            if(terrain==tile){
+                return;
+            }
             terrain=tile;
             if(tile==null || tile==TerrainTile.LAND){
                 return;
             }
             else{
                 for(int i=0;i<8;i++){
-                    neighbors[i].neighbors[(i+4)%8]=null;
-                    neighbors[i]=null;
+                    if(neighbors[i]!=null){
+                        neighbors[i].neighbors[(i+4)%8]=null;
+                        neighbors[i]=null;
+                    }
                 }
             }
         }
