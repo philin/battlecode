@@ -66,7 +66,6 @@ public class Map implements Module{
                 map[i][j].neighbors[5]=map[(i+MAP_SIZE-1)%MAP_SIZE][(j+1)%MAP_SIZE];
                 map[i][j].neighbors[6]=map[(i+MAP_SIZE-1)%MAP_SIZE][j];
                 map[i][j].neighbors[7]=map[(i+MAP_SIZE-1)%MAP_SIZE][(j+MAP_SIZE-1)%MAP_SIZE];
-
             }
         }
     }
@@ -78,7 +77,29 @@ public class Map implements Module{
     //call this every time the robot moves
     public void didMove(Direction dir){
         currNode = currNode.neighbors[Util.directionAsInt(dir)];
-        //stuff happens
+    }
+
+    private TerrainTile quickUpdateTerrain(MapLocation loc){
+        TerrainTile ret = map[loc.x%MAP_SIZE][loc.y%MAP_SIZE].terrain;
+        if(ret==null){
+            ret = myRC.senseTerrainTile(loc);
+            map[loc.x%MAP_SIZE][loc.y%MAP_SIZE].updateTerrain(ret);
+        }
+        return ret;
+    }
+
+    public void removeVertical(int x){
+        //stupid mode for now, this can be optimized
+        for(int y=0;y<MAP_SIZE;y++){
+            map[x][y].updateTerrain(TerrainTile.OFF_MAP);
+        }
+    }
+
+    public void removeHorizontal(int y){
+        //same comment as removeVertical
+        for(int x=0;x<MAP_SIZE;x++){
+            map[x][y].updateTerrain(TerrainTile.OFF_MAP);
+        }
     }
 
     public TerrainTile getTerrain(MapLocation loc){
@@ -86,6 +107,45 @@ public class Map implements Module{
         if(ret==null){
             ret = myRC.senseTerrainTile(loc);
             map[loc.x%MAP_SIZE][loc.y%MAP_SIZE].updateTerrain(ret);
+            if(ret==TerrainTile.OFF_MAP){
+                MapLocation currLocation = myRC.getLocation();
+                if(currLocation.x==loc.x){
+                    //horizontal
+                    removeHorizontal(loc.y%MAP_SIZE);
+                }
+                else if(currLocation.y==loc.y){
+                    //vertical
+                    removeVertical(loc.x%MAP_SIZE);
+                }
+                else{
+                    //who knows
+                    if(currLocation.x>loc.x){
+                        TerrainTile e = quickUpdateTerrain(loc.add(Direction.EAST));
+                        if(e!=null && e!=TerrainTile.OFF_MAP){
+                            removeVertical(loc.x%MAP_SIZE);
+                        }
+                    }
+                    else{
+                        TerrainTile w = quickUpdateTerrain(loc.add(Direction.WEST));
+                        if(w!=null && w!=TerrainTile.OFF_MAP){
+                            removeVertical(loc.x%MAP_SIZE);
+                        }
+                    }
+                    if(currLocation.y>loc.y){
+                        TerrainTile s = quickUpdateTerrain(loc.add(Direction.SOUTH));
+                        if(s!=null && s!=TerrainTile.OFF_MAP){
+                            removeHorizontal(loc.y%MAP_SIZE);
+                        }
+                    }
+                    else{
+                        TerrainTile n = quickUpdateTerrain(loc.add(Direction.NORTH));
+                         if(n!=null && n!=TerrainTile.OFF_MAP){
+                             removeHorizontal(loc.y%MAP_SIZE);
+                        }
+                    }
+
+                }
+            }
         }
         return ret;
     }
