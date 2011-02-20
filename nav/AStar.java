@@ -3,8 +3,8 @@ package team046.nav;
 import battlecode.common.*;
 
 import team046.Util;
+import team046.util.*;
 import team046.mapping.*;
-import java.util.PriorityQueue;
 import java.util.Comparator;
 
 public class AStar implements PathPlanner{
@@ -25,7 +25,7 @@ public class AStar implements PathPlanner{
     Map map;
     Map.Node[][] nodes;
     Map.Node currBest;
-    private PriorityQueue<Map.Node> openQueue = new PriorityQueue<Map.Node>(10,new NodeComparator());
+    private FastPriorityQueue<Map.Node> openQueue = new FastPriorityQueue<Map.Node>(new NodeComparator());
     RobotController myRC;
     MapLocation dest;
 
@@ -47,13 +47,12 @@ public class AStar implements PathPlanner{
         double newG=old.navInfo.g+distance;
         if(next.navInfo.state==stateCounter){//if open
             if(next.navInfo.g>newG){
-                openQueue.remove(next);
                 next.navInfo.g=newG;
                 next.navInfo.update(dest);
                 next.navInfo.parent = old;
                 next.navInfo.parentDir=dir;
                 next.navInfo.length = old.navInfo.length+1;
-                openQueue.offer(next);
+                openQueue.update(next);
             }
         }
         else if(next.navInfo.state!=-stateCounter){//if neither
@@ -86,6 +85,7 @@ public class AStar implements PathPlanner{
     public static final int MAX_STEPS = 20;
 
     public Direction[] planPath(MapLocation dest){
+        int startRound = Clock.getRoundNum();
         stateCounter++;
         openQueue.clear();
         this.dest = dest;
@@ -115,10 +115,12 @@ public class AStar implements PathPlanner{
                     path[currNode.navInfo.length-1]=currNode.navInfo.parentDir;
                     currNode = currNode.navInfo.parent;
                 }
+                System.out.println(steps+ ":" + (Clock.getRoundNum()-startRound));
                 return path;
             }
             steps++;
         }
+        System.out.println(":" + (Clock.getRoundNum()-startRound));
         return null;
     }
 }
