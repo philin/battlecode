@@ -62,6 +62,7 @@ public class AStar implements PathPlanner{
             next.navInfo.parentDir=dir;
             next.navInfo.length = old.navInfo.length+1;
             next.navInfo.g=newG;
+            map.getTerrain(old.navInfo.location.add(dir));
             next.navInfo.location = old.navInfo.location.add(dir);
             next.navInfo.update(dest);
             openQueue.offer(next);
@@ -106,6 +107,7 @@ public class AStar implements PathPlanner{
                 doNeighbors(node);
             }
             else{
+                System.out.println(steps);
                 //reconstruct the path
                 Map.Node currNode = node;
                 Direction[] path = new Direction[node.navInfo.length];

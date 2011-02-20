@@ -18,12 +18,10 @@ public class NavInfo{
     }
 
     public void update(MapLocation dest){
-        if(location!=oldLocation || dest!=oldDest){
+        if(dest!=oldDest || location!=oldLocation){
             oldLocation=location;
             oldDest = dest;
             h = Math.abs(dest.x-location.x)+Math.abs(dest.y-location.y);
-            //still euclidian, use diagonal distance
-            //h = Math.sqrt(dest.distanceSquaredTo(location));
         }
         f = h+g;
     }

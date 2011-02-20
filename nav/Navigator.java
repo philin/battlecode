@@ -136,6 +136,15 @@ public class Navigator implements Module{
                     actionQueueOffset++;
                 }
                 else{
+                    TerrainTile terrain = map.getTerrain(currLocation.add(currDirection));
+                    if(terrain==TerrainTile.VOID ||
+                       terrain==TerrainTile.OFF_MAP){
+                        //replan
+                        actionQueue=null;
+                        actionQueueLength=0;
+                        doPathing();
+                        return;
+                    }
                     waitCount++;
                     if(waitCount>STUCK_THRESHOLD){
                         //TODO unsticking logic
