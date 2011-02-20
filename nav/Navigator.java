@@ -140,8 +140,6 @@ public class Navigator implements Module{
                     if(terrain==TerrainTile.VOID ||
                        terrain==TerrainTile.OFF_MAP){
                         //replan
-                        actionQueue=null;
-                        actionQueueLength=0;
                         doPathing();
                         return;
                     }
