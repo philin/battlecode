@@ -107,6 +107,10 @@ public class Navigator implements Module{
                         //destination reached
                         actionQueue=null;
                     }
+                    else{
+                        //destination reached
+                        actionQueue=null;
+                    }
                 }
                 else{
                     if(!currLocation.isAdjacentTo(dest)){
