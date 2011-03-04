@@ -37,13 +37,13 @@ public class AStar implements PathPlanner{
     }
 
     void doNeighbor(Map.Node next, Map.Node old,Direction dir){
-        double distance = (dir.isDiagonal()) ? SQRT2 : 1;
         if(next==null){
             return;
         }
-        if(next.navInfo.state==-stateCounter){
+        if(next.navInfo.state==-stateCounter){//if closed
             return;
         }
+        double distance = (dir.isDiagonal()) ? SQRT2 : 1;
         double newG=old.navInfo.g+distance;
         if(next.navInfo.state==stateCounter){//if open
             if(next.navInfo.g>newG){
@@ -55,7 +55,7 @@ public class AStar implements PathPlanner{
                 openQueue.update(next);
             }
         }
-        else if(next.navInfo.state!=-stateCounter){//if neither
+        else{ //if(next.navInfo.state!=-stateCounter){//if neither
             next.navInfo.state=stateCounter;
             next.navInfo.parent = old;
             next.navInfo.parentDir=dir;

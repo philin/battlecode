@@ -89,7 +89,9 @@ public class FastPriorityQueue<T>{
         for(int i=0;i<size;i++){
             if(heapData[i]==t){
                 heapifyUp(i);
-                heapifyDown(i);
+                if(heapData[i]==t){
+                    heapifyDown(i);
+                }
                 break;
             }
         }
