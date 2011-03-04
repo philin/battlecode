@@ -110,12 +110,13 @@ public class AStar implements PathPlanner{
                 //reconstruct the path
                 Map.Node currNode = node;
                 Direction[] path = new Direction[node.navInfo.length];
-
+                int numSteps = 0;
                 while(currNode.navInfo.length!=0){
                     path[currNode.navInfo.length-1]=currNode.navInfo.parentDir;
                     currNode = currNode.navInfo.parent;
+                    numSteps++;
                 }
-                System.out.println(steps+ ":" + (Clock.getRoundNum()-startRound));
+                System.out.println(numSteps+ ":" + (Clock.getRoundNum()-startRound));
                 return path;
             }
             steps++;
