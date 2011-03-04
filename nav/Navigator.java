@@ -57,7 +57,16 @@ public class Navigator implements Module{
             actionQueueLength=0;
         }
         else if(!enterDest && desiredDirection==Direction.OMNI){
-            //XXX if we are on the tile, and enterDest and desiredDirection==OMNI bad stuff might happen.
+            if(dest.equals(currLocation)){
+                actionQueue = new Direction[2];
+                for(int i=0;i<8;i++){
+                    if(isPassable(currLocation.add(Util.intAsDirection(i)))){
+                        actionQueue[0]=Util.intAsDirection(i);
+                        actionQueue[1]=actionQueue[0].opposite();
+                    }
+                }
+            }
+
             actionQueueLength = actionQueue.length-1;
         }
         else{
