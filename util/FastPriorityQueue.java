@@ -13,7 +13,7 @@ public class FastPriorityQueue<T>{
         size=0;
         heapData = new Object[(1<<8)-1];;
     }
-
+    @SuppressWarnings("unchecked")
     private void heapifyUp(int loc){
         T value = (T)heapData[loc];
         while(loc>0){
@@ -28,6 +28,7 @@ public class FastPriorityQueue<T>{
             }
         }
     }
+    @SuppressWarnings("unchecked")
     private void heapifyDown(int loc){
         T value = (T)heapData[loc];
         while(loc<size){
@@ -76,6 +77,7 @@ public class FastPriorityQueue<T>{
         heapifyUp(size);
         size++;
     }
+    @SuppressWarnings("unchecked")
     public T poll(){
         Object temp = heapData[size-1];
         heapData[size-1] = heapData[0];
