@@ -85,7 +85,6 @@ public class AStar implements PathPlanner{
     public static final int MAX_STEPS = 30;
 
     public Direction[] planPath(MapLocation dest){
-        int startRound = Clock.getRoundNum();
         stateCounter++;
         openQueue.clear();
         this.dest = dest;
@@ -116,12 +115,10 @@ public class AStar implements PathPlanner{
                     currNode = currNode.navInfo.parent;
                     numSteps++;
                 }
-                System.out.println(numSteps+ ":" + (Clock.getRoundNum()-startRound));
                 return path;
             }
             steps++;
         }
-        System.out.println(":" + (Clock.getRoundNum()-startRound));
         return null;
     }
 }
