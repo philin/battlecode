@@ -127,8 +127,9 @@ public class Navigator implements Module{
                         doPathing();
                     }
                     else if(desiredDirection==Direction.OMNI){
-                        motor.setDirection(actionQueue[actionQueueLength]);
-                        currDirection = actionQueue[actionQueueLength];
+                        Direction dir = currLocation.directionTo(dest);
+                        motor.setDirection(dir);
+                        currDirection = dir;
                         actionQueue=null;
                     }
                     else{
