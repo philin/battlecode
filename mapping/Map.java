@@ -3,242 +3,172 @@ package team046.mapping;
 import battlecode.common.*;
 
 import team046.*;
+import team046.nav.*;
 
+//the map itself is not actually aware of where any of the locations are in absolute coordinates, only relative to eachother
 public class Map implements Module{
-    public class LocationInfo{
+    public class Node{
         public TerrainTile terrain;
         public Mine mine;
-        public Robot[] robots;
-        public int updateRound;
-        public LocationInfo(TerrainTile tile){
-            terrain = tile;
-        }
-        public LocationInfo(MapLocation loc){
-            terrain = Map.this.rc.senseTerrainTile(loc);
+        public NavInfo navInfo;//path planning data goes here
+        public Node[] neighbors;
+        public Node(){
+            terrain = null;
+            navInfo = new NavInfo();
+            neighbors = new Node[8];
         }
         public void addMine(Mine mine){
             this.mine = mine;
-            updateRound = Clock.getRoundNum();
+        }
+        public void updateTerrain(TerrainTile tile){
+            if(terrain==tile){
+                return;
+            }
+            terrain=tile;
+            if(tile==null || tile==TerrainTile.LAND){
+                return;
+            }
+            else{
+                for(int i=0;i<8;i++){
+                    if(neighbors[i]!=null){
+                        neighbors[i].neighbors[(i+4)%8]=null;
+                        neighbors[i]=null;
+                    }
+                }
+            }
         }
     }
+    public static final int MAP_SIZE=72;//2 tiles of padding
+    Node map[][];
+    Node currNode;
+    RobotController myRC;
 
-    private LocationInfo[][] map;
-    private int size;
-    private int realSize=-1;
-    private boolean isOffset = false;
-    private int xWest=-1, xEast=-1;
-    private int yNorth=-1, ySouth=-1;
-    private MapLocation offset;
-    private RobotController rc;
-    private SensorController sensor;
-    private int lastSenseRound=0;
-    private static final int MIN_SENSE_WAIT=10;
-    private static final int MAX_MAP_SIZE = 72;
-
-    public Map(RobotController rc){
-        this.rc = rc;
-        this.size = MAX_MAP_SIZE;
-        map = new LocationInfo[size][];
-        for(int i=0;i<size;i++){
-            map[i] = new LocationInfo[size];
+    public Map(RobotController myRC){
+        this.myRC=myRC;
+        map = new Node[MAP_SIZE][];
+        for(int i=0;i<MAP_SIZE;i++){
+            map[i] = new Node[MAP_SIZE];
+            for(int j=0;j<MAP_SIZE;j++){
+                map[i][j] = new Node();
+            }
         }
-    }
-    //use this version if we know the size of the map
-    public Map(RobotController rc, MapLocation offset, int size){
-        this.rc = rc;
-        this.size = size;
-        realSize = size;
-        isOffset = true;
-        this.offset = offset;
-        map = new LocationInfo[size][];
-        for(int i=0;i<size;i++){
-            map[i] = new LocationInfo[size];
+        for(int i=0;i<MAP_SIZE;i++){
+            for(int j=0;j<MAP_SIZE;j++){
+                //setup neighbors
+                //it might be worth while to put this code somewhere else
+                //(0,0) is in the northwest
+                //remember 0=north, go clockwise
+                map[i][j].neighbors[0]=map[i][(j+MAP_SIZE-1)%MAP_SIZE];
+                map[i][j].neighbors[1]=map[(i+1)%MAP_SIZE][(j+MAP_SIZE-1)%MAP_SIZE];
+                map[i][j].neighbors[2]=map[(i+1)%MAP_SIZE][j];
+                map[i][j].neighbors[3]=map[(i+1)%MAP_SIZE][(j+1)%MAP_SIZE];
+                map[i][j].neighbors[4]=map[i][(j+1)%MAP_SIZE];
+                map[i][j].neighbors[5]=map[(i+MAP_SIZE-1)%MAP_SIZE][(j+1)%MAP_SIZE];
+                map[i][j].neighbors[6]=map[(i+MAP_SIZE-1)%MAP_SIZE][j];
+                map[i][j].neighbors[7]=map[(i+MAP_SIZE-1)%MAP_SIZE][(j+MAP_SIZE-1)%MAP_SIZE];
+            }
         }
     }
 
     public void setSensor(SensorController controller){
-        sensor = controller;
+        //sensor = controller;
     }
 
-    public void setTerrain(int x, int y, TerrainTile tile){
-        map[x][y].terrain = tile;
+    //call this every time the robot moves
+    public void didMove(Direction dir){
+        currNode = currNode.neighbors[Util.directionAsInt(dir)];
     }
 
-    public TerrainTile getTerrainQuick(MapLocation loc){
-        int x,y;
-        if(isOffset){
-            x = loc.x-offset.x;
-            y = loc.y-offset.y;
-            if(x<0 || x>=size || y<0 || y>=size){
-                return TerrainTile.OFF_MAP;
-            }
+    private TerrainTile quickUpdateTerrain(MapLocation loc){
+        TerrainTile ret = map[loc.x%MAP_SIZE][loc.y%MAP_SIZE].terrain;
+        if(ret==null){
+            ret = myRC.senseTerrainTile(loc);
+            map[loc.x%MAP_SIZE][loc.y%MAP_SIZE].updateTerrain(ret);
         }
-        else{
-            x = loc.x%MAX_MAP_SIZE;
-            y = loc.y%MAX_MAP_SIZE;
-            if(offset!=null){
-                int otherX = loc.x-offset.x;
-                int otherY = loc.y-offset.y;
-                if(otherX<0 || otherX>size || otherY<0 || otherY>size){
-                    return TerrainTile.OFF_MAP;
-                }
-            }
-        }
-        //x and y are now in array coordinates
-        if(map[x][y]!=null){
-            return map[x][y].terrain;
-        }
-        return rc.senseTerrainTile(loc);
+        return ret;
     }
 
-    public TerrainTile getTerrain(int x, int y){
-        MapLocation loc = new MapLocation(x,y);
-        return getTerrain(loc);
+    public void removeVertical(int x){
+        //stupid mode for now, this can be optimized
+        for(int y=0;y<MAP_SIZE;y++){
+            map[x][y].updateTerrain(TerrainTile.OFF_MAP);
+        }
+    }
+
+    public void removeHorizontal(int y){
+        //same comment as removeVertical
+        for(int x=0;x<MAP_SIZE;x++){
+            map[x][y].updateTerrain(TerrainTile.OFF_MAP);
+        }
     }
 
     public TerrainTile getTerrain(MapLocation loc){
-        int x,y;
-        if(isOffset){
-            x = loc.x-offset.x;
-            y = loc.y-offset.y;
-            if(x<0 || x>=size || y<0 || y>=size){
-                return TerrainTile.OFF_MAP;
-            }
-        }
-        else{
-            x = loc.x%MAX_MAP_SIZE;
-            y = loc.y%MAX_MAP_SIZE;
-            if(offset!=null){
-                int otherX = loc.x-offset.x;
-                int otherY = loc.y-offset.y;
-                if(otherX<0 || otherX>size || otherY<0 || otherY>size){
-                    return TerrainTile.OFF_MAP;
+        TerrainTile ret = map[loc.x%MAP_SIZE][loc.y%MAP_SIZE].terrain;
+        if(ret==null){
+            ret = myRC.senseTerrainTile(loc);
+            map[loc.x%MAP_SIZE][loc.y%MAP_SIZE].updateTerrain(ret);
+            if(ret==TerrainTile.OFF_MAP){
+                MapLocation currLocation = myRC.getLocation();
+                if(currLocation.x==loc.x){
+                    //horizontal
+                    removeHorizontal(loc.y%MAP_SIZE);
                 }
-            }
-        }
-        //x and y are now in array coordinates
-        if(map[x][y]!=null){
-            return map[x][y].terrain;
-        }
-        TerrainTile tile = rc.senseTerrainTile(loc);
-        if(tile!=null){
-            map[x][y] = new LocationInfo(tile);
-            if(tile==TerrainTile.OFF_MAP && (offset==null || realSize<0)){
-                TerrainTile se = rc.senseTerrainTile(loc.add(1,1));
-                TerrainTile sw = rc.senseTerrainTile(loc.add(-1,1));
-                TerrainTile nw = rc.senseTerrainTile(loc.add(-1,-1));
-                TerrainTile ne = rc.senseTerrainTile(loc.add(1,-1));
-                if(se==TerrainTile.LAND || se==TerrainTile.VOID){
-                    if(sw==TerrainTile.LAND || sw==TerrainTile.VOID){
-                        //northern boundary
-                        yNorth = loc.y+1;
-                        if(xWest>=0){
-                            offset = new MapLocation(yNorth,xWest);
-                            if(xEast>=0 && ySouth>=0){
-                                realSize = Math.max(ySouth-yNorth,xWest-xEast);
-                            }
-                        }
-                    }
-                    else if(ne==TerrainTile.LAND || ne==TerrainTile.VOID){
-                        //western boundary
-                        xWest = loc.x+1;
-                        if(yNorth>=0){
-                            offset = new MapLocation(yNorth,xWest);
-                            if(xEast>=0 && ySouth>=0){
-                                realSize = Math.max(ySouth-yNorth,xWest-xEast);
-                            }
+                else if(currLocation.y==loc.y){
+                    //vertical
+                    removeVertical(loc.x%MAP_SIZE);
+                }
+                else{
+                    //who knows
+                    if(currLocation.x>loc.x){
+                        TerrainTile e = quickUpdateTerrain(loc.add(Direction.EAST));
+                        if(e!=null && e!=TerrainTile.OFF_MAP){
+                            removeVertical(loc.x%MAP_SIZE);
                         }
                     }
                     else{
-                        //corner !
-                        offset = loc.add(1,1);
-                        xWest = offset.x;
-                        yNorth = offset.y;
-                        if(xEast>=0 && ySouth>=0){
-                            realSize = Math.max(ySouth-yNorth,xWest-xEast);
+                        TerrainTile w = quickUpdateTerrain(loc.add(Direction.WEST));
+                        if(w!=null && w!=TerrainTile.OFF_MAP){
+                            removeVertical(loc.x%MAP_SIZE);
                         }
                     }
-                }
-                else if(nw==TerrainTile.LAND || nw==TerrainTile.VOID){
-                    if(ne==TerrainTile.LAND || ne==TerrainTile.VOID){
-                        //southern boundary
-                        ySouth = loc.y;
-                        if(xEast>=0 && xWest>=0 && yNorth>=0){
-                            realSize = Math.max(ySouth-yNorth,xWest-xEast);
-                        }
-                    }
-                    else if(sw==TerrainTile.LAND || sw==TerrainTile.VOID){
-                        //eastern boundary
-                        xEast = loc.x;
-                        if(xWest>=0 && yNorth>=0 && ySouth>=0){
-                            realSize = Math.max(ySouth-yNorth,xWest-xEast);
+                    if(currLocation.y>loc.y){
+                        TerrainTile s = quickUpdateTerrain(loc.add(Direction.SOUTH));
+                        if(s!=null && s!=TerrainTile.OFF_MAP){
+                            removeHorizontal(loc.y%MAP_SIZE);
                         }
                     }
                     else{
-                        //corner
-                        xEast = loc.x;
-                        ySouth = loc.y;
-                        if(xWest>=0 && yNorth>=0){
-                            realSize = Math.max(ySouth-yNorth,xWest-xEast);
+                        TerrainTile n = quickUpdateTerrain(loc.add(Direction.NORTH));
+                         if(n!=null && n!=TerrainTile.OFF_MAP){
+                             removeHorizontal(loc.y%MAP_SIZE);
                         }
                     }
-                }
-                else if(ne==TerrainTile.LAND || ne==TerrainTile.VOID){
-                    //south west corner
-                    xWest = loc.x+1;
-                    ySouth = loc.y;
-                    if(xEast>=0){
-                        offset = new MapLocation(yNorth,xWest);
-                        if(yNorth>=0){
-                            realSize = Math.max(ySouth-yNorth,xWest-xEast);
-                        }
-                    }
-                }
-                else if(sw==TerrainTile.LAND || sw==TerrainTile.VOID){
-                    //north east corner
-                    xEast = loc.x;
-                    yNorth = loc.y+1;
-                    if(xWest>=0){
-                        offset = new MapLocation(yNorth,xWest);
-                        if(ySouth>=0){
-                            realSize = Math.max(ySouth-yNorth,xWest-xEast);
-                        }
-                    }
+
                 }
             }
-            else if(sensor != null && sensor.canSenseSquare(loc) &&
-                    lastSenseRound-Clock.getRoundNum()>MIN_SENSE_WAIT){
-                lastSenseRound=Clock.getRoundNum();
-                Mine[] mines = sensor.senseNearbyGameObjects(Mine.class);
-                //XXX what we should really do is iterate over all locations in
-                //the sensor range and set them. Right now
-                //we use that last round we sensed as a heuristic
-                for(Mine m : mines){
-                    MapLocation mineLoc = m.getLocation();
-                    if(map[mineLoc.x][mineLoc.y]==null){
-                        map[mineLoc.x][mineLoc.y] = new LocationInfo(mineLoc);
-                        map[mineLoc.x][mineLoc.y].addMine(m);
-                    }
-                }
-            }
-            return map[x][y].terrain;
         }
-        return null;
+        return ret;
     }
 
-    public int getRealSize(){
-        return realSize;
+    public NavInfo getNavInfo(MapLocation loc){
+        return map[loc.x%MAP_SIZE][loc.y%MAP_SIZE].navInfo;
     }
 
-    public MapLocation getOffset(){
-        return offset;
+    public Node getNode(MapLocation loc){
+        return map[loc.x%MAP_SIZE][loc.y%MAP_SIZE];
     }
 
-    public void init(Planner planner){
-        //STUB
+    public Node getCurrNode(){
+        return currNode;
     }
 
     public ModuleType getType(){
         return ModuleType.MAPPING;
     }
+
+    public void init(Planner p){
+        //STUB
+        currNode = getNode(myRC.getLocation());
+    }
 }
+

@@ -10,7 +10,7 @@ import team046.*;
 //I plan to make this abstract and create subclasses for ground and air units
 //Buildings don't need Navigators :)
 public class Navigator implements Module{
-    private BlockedMap blockedMap;
+    //private BlockedMap blockedMap;
     private boolean[][] blacklistedBlocks;
     private Direction[] actionQueue;
     private Direction currDirection;
@@ -26,6 +26,7 @@ public class Navigator implements Module{
     private static final int STUCK_THRESHOLD=10;
     private static final int LONG_DISTANCE_THRESHOLD=25;
     private static final int MAX_ACTION_QUEUE_LENGTH=15;
+    private PathPlanner pather;
     private Planner planner;
     private Map map;
     private RobotController rc;
@@ -44,58 +45,23 @@ public class Navigator implements Module{
         return map.getTerrain(loc)==TerrainTile.LAND;
     }
 
-    private void doShortDistancePathing(MapLocation dest, boolean enterDest){
-        MapLocation curr = currLocation;
-        int i;
-        for(i=0;i<MAX_ACTION_QUEUE_LENGTH;i++){
-            if(curr.equals(dest)){
-                break;
-            }
-            Direction dir = curr.directionTo(dest);
-            int j;
-            if(map.getTerrain(curr.add(dir))==null){
-                //unknown stuff, stop here
-                break;
-            }
-            for(j=0;j<8;j++){
-                if(isPassable(curr.add(dir))){
-                    actionQueue[i]=dir;
-                    curr = curr.add(dir);
-                    break;
-                }
-                dir = dir.rotateLeft();
-            }
-            //XXX cleanup
-            if(j==8){
-                break;
-            }
-        }
-        if(i==0){
-            //nothing to do
-            actionQueue=null;
+    private void doPathing(){
+        actionQueueOffset=0;
+        if(enterDest || desiredDirection==Direction.OMNI){
+            actionQueue = pather.planPath(dest);
         }
         else{
-            actionQueueLength=i;
-            if(!enterDest){
-                actionQueueLength--;
-            }
+            actionQueue = pather.planPath(dest.add(desiredDirection.opposite()));
         }
-    }
-
-    private void doPathing(){
-        isPassable(currLocation);
-        actionQueue = new Direction[MAX_ACTION_QUEUE_LENGTH];
-        actionQueueOffset = 0;
-        MapLocation tempDest = dest;
-        if(currLocation.distanceSquaredTo(dest)>LONG_DISTANCE_THRESHOLD){
-            if(prevDest!=dest){
-                //new destination, redo wavefront
-                prevDest=dest;
-            }
+        if(actionQueue==null){
+            actionQueueLength=0;
         }
-        //short distance planning
-        if(tempDest!=null){
-            doShortDistancePathing(tempDest,enterDest);
+        else if(!enterDest && desiredDirection==Direction.OMNI){
+            //XXX if we are on the tile, and enterDest and desiredDirection==OMNI bad stuff might happen.
+            actionQueueLength = actionQueue.length-1;
+        }
+        else{
+            actionQueueLength = actionQueue.length;
         }
     }
 
@@ -119,6 +85,13 @@ public class Navigator implements Module{
         setDestination(loc,Direction.OMNI,true);
     }
 
+    public void moveForward() throws GameActionException{
+        map.didMove(currDirection);
+        pather.didMove(currDirection);
+        motor.moveForward();
+        currLocation = currLocation.add(currDirection);
+    }
+
     public void doMovement(){
         try{
             if(motor.isActive() || actionQueue==null){
@@ -135,6 +108,10 @@ public class Navigator implements Module{
                         //destination reached
                         actionQueue=null;
                     }
+                    else{
+                        //destination reached
+                        actionQueue=null;
+                    }
                 }
                 else{
                     if(!currLocation.isAdjacentTo(dest)){
@@ -142,7 +119,7 @@ public class Navigator implements Module{
                     }
                     else if(desiredDirection==Direction.OMNI){
                         motor.setDirection(actionQueue[actionQueueLength]);
-                        currDirection = actionQueue[actionQueueOffset];
+                        currDirection = actionQueue[actionQueueLength];
                         actionQueue=null;
                     }
                     else{
@@ -160,11 +137,17 @@ public class Navigator implements Module{
                     {
                         System.out.println("not matiching!!!!");
                     }
-                    motor.moveForward();
+                    moveForward();
                     actionQueueOffset++;
-                    currLocation = currLocation.add(currDirection);
                 }
                 else{
+                    TerrainTile terrain = map.getTerrain(currLocation.add(currDirection));
+                    if(terrain==TerrainTile.VOID ||
+                       terrain==TerrainTile.OFF_MAP){
+                        //replan
+                        doPathing();
+                        return;
+                    }
                     waitCount++;
                     if(waitCount>STUCK_THRESHOLD){
                         //TODO unsticking logic
@@ -193,13 +176,14 @@ public class Navigator implements Module{
         if(map==null){
             System.out.println("Warning, there is no mapping module!");
         }
+        pather = new AStar(map,rc);
         currLocation = rc.getLocation();
         currDirection = rc.getDirection();
-        MapLocation offset = map.getOffset();
-        if(offset!=null){
+        //MapLocation offset = map.getOffset();
+        //if(offset!=null){
             //initialize the wavefront map
             //wavefrontInit();
-        }
+        //}
     }
     public ModuleType getType(){
         return ModuleType.NAVIGATION;
