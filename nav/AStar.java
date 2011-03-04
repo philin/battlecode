@@ -82,7 +82,7 @@ public class AStar implements PathPlanner{
     public void didMove(Direction dir){}
     public void gotStuck(int index){}
 
-    public static final int MAX_STEPS = 20;
+    public static final int MAX_STEPS = 30;
 
     public Direction[] planPath(MapLocation dest){
         int startRound = Clock.getRoundNum();

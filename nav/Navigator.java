@@ -46,6 +46,7 @@ public class Navigator implements Module{
     }
 
     private void doPathing(){
+        actionQueueOffset=0;
         if(enterDest || desiredDirection==Direction.OMNI){
             actionQueue = pather.planPath(dest);
         }
