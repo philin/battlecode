@@ -226,9 +226,9 @@ public class BasicBuilder extends Unit
 
     private void activatingRobotBehavior()
     {
-        myRC.yield();
         try{
-            if(myRC.getTeamResources() > 100 && myRC.getLocation().distanceSquaredTo(targetUnit) == 1)
+            myRC.yield();
+            if(myRC.getTeamResources()>100 && myRC.getLocation().distanceSquaredTo(targetUnit)==1)
             {
                 GameObject object = this.sensor.senseObjectAtLocation(
                     this.targetUnit,
@@ -238,11 +238,13 @@ public class BasicBuilder extends Unit
                 //check if robot is still there
                 if( object != null && object instanceof Robot)
                 {
+
                     RobotInfo rinfo = this.sensor.senseRobotInfo((Robot)object);
                     if(!rinfo.on)
                     {
                         myRC.turnOn(targetUnit, RobotLevel.ON_GROUND);
                     }
+
                 }
             }
 
