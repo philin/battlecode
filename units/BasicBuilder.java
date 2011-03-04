@@ -79,8 +79,8 @@ public class BasicBuilder extends Unit
                 changeCounter++;
                 if(changeCounter>10){
                     //choose another location
-                    int dx = 15*(rand.nextInt(10)-4);
-                    int dy = 15*(rand.nextInt(10)-4);
+                    int dx = 15*(rand.nextInt(11)-5);
+                    int dy = 15*(rand.nextInt(11)-5);
                     MapLocation newLocation
                         = myRC.getLocation().add(dx, dy);
 
