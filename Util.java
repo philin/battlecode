@@ -65,7 +65,18 @@ public class Util
                                  loc,
                                  UnitCommon.BASIC_BUILDING_HEIGHT);
                 }
-
+                break;
+            case UnitCommon.FACTORY:
+                builder.build(UnitCommon.FACTORY_CHASSIS, loc);
+                //add the components
+                for (int i = 0; i < UnitCommon.FACTORY_COMPONENTS.length; ++i)
+                {
+                    addComponent(myRC,
+                                 builder,
+                                 UnitCommon.FACTORY_COMPONENTS[i],
+                                 loc,
+                                 UnitCommon.FACTORY_HEIGHT);
+                }
                 break;
             default:
                 break;
