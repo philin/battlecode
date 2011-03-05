@@ -9,9 +9,10 @@ public class BasicBuilding extends Unit
 {
     //states
     protected static final int SELF_UPGRADE = 0;
-    protected static final int SCANNING = 1;
-    protected static final int ATTACKING = 2;
-    protected static final int SPAWNING_UNIT = 3;
+    protected static final int UPGRADING_NEARBY_FACTORY = 1;
+    protected static final int SCANNING = 2;
+    protected static final int ATTACKING = 3;
+    protected static final int SPAWNING_UNIT = 4;
 
     protected static final int MAX_SPINS_PER_SCAN = 12;
 
@@ -101,6 +102,33 @@ public class BasicBuilding extends Unit
         currentstate = SCANNING;
     }
 
+    protected void upgradingNearbyFactoryBehavior()
+    {
+        try{
+            Util.addComponent(myRC,
+                              builder,
+                              ComponentType.SIGHT,
+                              targetlocation,
+                              targetlevel);
+            Util.addComponent(myRC,
+                              builder,
+                              ComponentType.SMG,
+                              targetlocation,
+                              targetlevel);
+            Util.addComponent(myRC,
+                              builder,
+                              ComponentType.SMG,
+                              targetlocation,
+                              targetlevel);
+
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        currentstate = SCANNING;
+    }
+
     protected void scanningBehavior()
     {
 
@@ -115,6 +143,22 @@ public class BasicBuilding extends Unit
                     {
                         continue;
                     }
+                    if(go.getTeam() == myRC.getTeam()
+                       && go instanceof Robot)
+                    {
+                        RobotInfo ri = radarsensor.senseRobotInfo((Robot)go);
+                        targetlocation = ri.location;
+                        if(Util.isFactory(ri) &&
+                            !Util.isArmedFactory(ri) &&
+                           myRC.getLocation().distanceSquaredTo(targetlocation) == 1)
+                        {
+
+                            targetlevel = RobotLevel.ON_GROUND;
+                            currentstate = UPGRADING_NEARBY_FACTORY;
+                            return;
+                        }
+                    }
+
                     MapLocation targLoc = radarsensor.senseLocationOf(go);
                     if(go.getTeam() != myRC.getTeam() && weapon.withinRange(targLoc))
                     {
@@ -279,6 +323,9 @@ public class BasicBuilding extends Unit
                 break;
             case SCANNING:
                 scanningBehavior();
+                break;
+            case UPGRADING_NEARBY_FACTORY:
+                upgradingNearbyFactoryBehavior();
                 break;
             case ATTACKING:
                 attackingBehavior();

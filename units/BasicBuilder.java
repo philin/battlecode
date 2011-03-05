@@ -69,31 +69,24 @@ public class BasicBuilder extends Unit
         return UnitCommon.BASIC_BUILDER;
     }
 
-    private boolean isFactory(RobotInfo ri)
-    {
-        ComponentType[] componentList = ri.components;
-        for(int i = 0; i < componentList.length; ++i)
-        {
-            if(componentList[i] == ComponentType.FACTORY)
-            {
-                return true;
-            }
-
-        }
-
-        return false;
-    }
-
     private void buildingFactoryBehavior()
     {
         try{
+
+            GameObject go = this.sensor.senseObjectAtLocation(myRC.getLocation(),
+                                                              RobotLevel.ON_GROUND);
+            if(go == null || go instanceof Mine)
+            {
+                return;
+            }
+
             for(int i = 0; i < 4; ++i)
             {
                 Robot[] nearbyFactories = this.sensor.senseNearbyGameObjects(Robot.class);
                 for(int j = 0; j < nearbyFactories.length; ++j)
                 {
                     RobotInfo ri = this.sensor.senseRobotInfo(nearbyFactories[j]);
-                    if(isFactory(ri))
+                    if(Util.isFactory(ri))
                     {
                         currentstate = 0;
                         return;
@@ -104,26 +97,27 @@ public class BasicBuilder extends Unit
 
                 navigator.setDirection(myRC.getDirection().rotateRight());
             }
-            //no factories found near spawn point
-            //build a factory
-            //search all directions to see if there's a place to build
-            for(int i = 0; i < 4; ++i)
-            {
-                if(myRC.getTeamResources() > 250 &&
-                   this.builder.canBuild(Chassis.BUILDING,
-                                         myRC.getLocation().add(myRC.getDirection())))
-                {
-                    Util.buildUnit(myRC,
-                                   builder,
-                                   UnitCommon.FACTORY,
-                                   myRC.getLocation().add(myRC.getDirection()));
-                    break;
-                }
-                while(this.motor.isActive())
-                    myRC.yield();
-                navigator.setDirection(myRC.getDirection().rotateRight());
 
+            //no factories found near spawn point
+            //build a factory where we spawned
+
+            navigator.setDestination(myRC.getLocation(), false);
+            while(!navigator.isAtDest())
+            {
+                myRC.yield();
+                navigator.doMovement();
             }
+
+            if(myRC.getTeamResources() > 250 &&
+               this.builder.canBuild(UnitCommon.FACTORY_CHASSIS,
+                                     myRC.getLocation().add(myRC.getDirection())))
+            {
+                Util.buildUnit(myRC,
+                               builder,
+                               UnitCommon.FACTORY,
+                               myRC.getLocation().add(myRC.getDirection()));
+            }
+
         }
         catch(Exception ex)
         {

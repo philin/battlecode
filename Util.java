@@ -126,4 +126,65 @@ public class Util
     public static int directionAsInt(Direction dir){
         return dir.ordinal();
     }
+
+
+    public static boolean isFactory(RobotInfo ri)
+    {
+        ComponentType[] componentList = ri.components;
+        for(int i = 0; i < componentList.length; ++i)
+        {
+            if(componentList[i] == ComponentType.FACTORY)
+            {
+                return true;
+            }
+
+        }
+
+        return false;
+    }
+
+    public static boolean isUnarmedFactory(RobotInfo ri)
+    {
+            boolean hasFactory = false;
+        //sight can determine armed-ness because it is the first thing built
+        boolean hasSight = false;
+        ComponentType[] componentList = ri.components;
+        for(int i = 0; i < componentList.length; ++i)
+        {
+            if(componentList[i] == ComponentType.FACTORY)
+            {
+                hasFactory = true;
+            }
+            if(componentList[i] == ComponentType.SIGHT)
+            {
+                hasSight = true;
+            }
+
+        }
+
+        return hasFactory && !hasSight;
+    }
+
+    public static boolean isArmedFactory(RobotInfo ri)
+    {
+        boolean hasFactory = false;
+        //sight can determine armed-ness because it is the first thing built
+        boolean hasSight = false;
+        ComponentType[] componentList = ri.components;
+        for(int i = 0; i < componentList.length; ++i)
+        {
+            if(componentList[i] == ComponentType.FACTORY)
+            {
+                hasFactory = true;
+            }
+            if(componentList[i] == ComponentType.SIGHT)
+            {
+                hasSight = true;
+            }
+
+        }
+
+        return hasFactory && hasSight;
+    }
+
 }
