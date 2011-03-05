@@ -101,6 +101,10 @@ public class Navigator implements Module{
         actionQueueLength=0;
     }
 
+    public boolean isActive(){
+        return motor.isActive();
+    }
+
     public void setDirection(Direction dir){
         clearDest();
         try{
