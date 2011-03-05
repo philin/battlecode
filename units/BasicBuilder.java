@@ -106,6 +106,7 @@ public class BasicBuilder extends Unit
             }
             //no factories found near spawn point
             //build a factory
+            //search all directions to see if there's a place to build
             for(int i = 0; i < 4; ++i)
             {
                 if(myRC.getTeamResources() > 250 &&

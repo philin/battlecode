@@ -37,7 +37,8 @@ public class RobotPlayer implements Runnable
             if (myRC.getChassis() == Chassis.BUILDING)
             {
                 boolean hasSensor = false;
-                boolean hasBuilder = false;
+                boolean hasConstructor = false;
+                boolean hasFactory = false;
                 for(int i = 0; i < components.length; ++i)
                 {
                     if(components[i].type() == ComponentType.RECYCLER)
@@ -46,10 +47,20 @@ public class RobotPlayer implements Runnable
                     }
                     else if(components[i] instanceof SensorController)
                     {
-                        hasBuilder = true;
+                        hasConstructor = true;
+                    }
+                    else if(components[i].type() == ComponentType.FACTORY)
+                    {
+                        hasFactory = true;
                     }
                 }
-                if(hasSensor && hasBuilder)
+                if(hasFactory)
+                {
+                    Unit factory = new Factory(myRC);
+                    this.unit = factory;
+                    factory.runBehavior();
+                }
+                if(hasSensor && hasConstructor)
                 {
 
                     Unit basicBuilding = new BasicBuilding(myRC);
@@ -65,7 +76,8 @@ public class RobotPlayer implements Runnable
                 boolean hasSight = false;
                 boolean hasRadar = false;
                 boolean hasConstructor = false;
-                boolean hasRailgun = false;
+                boolean hasBlaster = false;
+
                 for(int i = 0; i < components.length; ++i)
                 {
                     if(components[i].type() == ComponentType.CONSTRUCTOR)
@@ -78,24 +90,26 @@ public class RobotPlayer implements Runnable
                     }
                     else if(components[i].type() == ComponentType.BLASTER)
                     {
-                        hasRailgun = true;
+                        hasBlaster = true;
                     }
                     else if(components[i].type() == ComponentType.RADAR)
                     {
                         hasRadar = true;
                     }
+
                 }
-                if(hasSight && hasConstructor && !hasRailgun)
+
+                if(hasSight && hasConstructor && !hasBlaster)
                 {
                      Unit basicBuilder = new BasicBuilder(myRC);
                      this.unit = basicBuilder;
                      basicBuilder.runBehavior();
                 }
-                if(hasRadar && hasRailgun && !hasConstructor)
+                if(hasRadar && hasBlaster && !hasConstructor)
                 {
-                    Unit railgunAttacker = new BasicAttacker(myRC);
-                    this.unit = railgunAttacker;
-                    railgunAttacker.runBehavior();
+                    Unit basicAttacker = new BasicAttacker(myRC);
+                    this.unit = basicAttacker;
+                    basicAttacker.runBehavior();
                 }
             }
             myRC.yield();

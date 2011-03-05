@@ -8,27 +8,28 @@ import team046.*;
 public class BasicBuilding extends Unit
 {
     //states
-    private static final int SELF_UPGRADE = 0;
-    private static final int SCANNING = 1;
-    private static final int ATTACKING = 2;
-    private static final int SPAWNING_UNIT = 3;
+    protected static final int SELF_UPGRADE = 0;
+    protected static final int SCANNING = 1;
+    protected static final int ATTACKING = 2;
+    protected static final int SPAWNING_UNIT = 3;
 
-    private static final int MAX_SPINS_PER_SCAN = 12;
+    protected static final int MAX_SPINS_PER_SCAN = 12;
 
-    private int attackerBuildCountdown = 2;
+    protected int attackerBuildCountdown = 2;
 
-    private int currentstate;
-    private MapLocation targetlocation = null;
-    private RobotLevel  targetlevel = null;
+    protected int currentstate;
+    protected MapLocation targetlocation = null;
+    protected RobotLevel  targetlevel = null;
 
-    private int scanspincount = 0;
+    protected int scanspincount = 0;
 
     //controllers
-    BuilderController builder = null;
-    SensorController sensor = null;
-    SensorController radarsensor = null;
-    WeaponController weapon = null;
-    MovementController motor = null;
+    protected BuilderController builder = null;
+    protected SensorController sensor = null;
+    protected SensorController radarsensor = null;
+    protected WeaponController weapon = null;
+    protected MovementController motor = null;
+
     public BasicBuilding(RobotController myRC)
     {
         super(myRC);
@@ -39,7 +40,7 @@ public class BasicBuilding extends Unit
         ComponentController [] components = myRC.components();
         for(int i = 0; i < components.length; ++i)
         {
-            if (components[i].type() == ComponentType.RECYCLER)
+            if (components[i] instanceof BuilderController)
             {
                 builder = (BuilderController)components[i];
             }
@@ -57,7 +58,7 @@ public class BasicBuilding extends Unit
         return UnitCommon.BASIC_BUILDING;
     }
 
-    private void selfUpgradeBehavior()
+    protected void selfUpgradeBehavior()
     {
 
         myRC.yield();
@@ -67,7 +68,7 @@ public class BasicBuilding extends Unit
                               ComponentType.RADAR,
                               myRC.getLocation(),
                               RobotLevel.ON_GROUND);
-            myRC.yield();
+
 
             Util.addComponent(myRC,
                               builder,
@@ -100,7 +101,7 @@ public class BasicBuilding extends Unit
         currentstate = SCANNING;
     }
 
-    private void scanningBehavior()
+    protected void scanningBehavior()
     {
 
         while (true)
@@ -150,7 +151,7 @@ public class BasicBuilding extends Unit
         }
     }
 
-    private void attackingBehavior()
+    protected void attackingBehavior()
     {
 
         /*
@@ -203,7 +204,7 @@ public class BasicBuilding extends Unit
 
     }
 
-    private void spawningUnitBehavior()
+    protected void spawningUnitBehavior()
     {
 
         myRC.yield();
@@ -292,12 +293,5 @@ public class BasicBuilding extends Unit
             doIdleTasks();
         }
     }
-/*
-  public void runBehavior()
-  {
-  armSelf();
 
-
-  }
-*/
 }
