@@ -94,10 +94,40 @@ public class Navigator implements Module{
         setDestination(loc,Direction.OMNI,true);
     }
 
-    public void moveForward() throws GameActionException{
+    private void clearDest(){
+        dest = null;
+        desiredDirection = Direction.OMNI;
+        actionQueue=null;
+        actionQueueLength=0;
+    }
+
+    public void setDirection(Direction dir){
+        clearDest();
+        try{
+            turn(dir);
+        }
+        catch(GameActionException e){
+        }
+    }
+
+    public void moveForward(){
+        clearDest();
+        try{
+            driveForward();
+        }
+        catch(GameActionException e){
+        }
+    }
+
+    private void turn(Direction dir) throws GameActionException{
+        motor.setDirection(dir);
+        currDirection = dir;
+    }
+
+    private void driveForward() throws GameActionException{
+        motor.moveForward();
         map.didMove(currDirection);
         pather.didMove(currDirection);
-        motor.moveForward();
         currLocation = currLocation.add(currDirection);
     }
 
@@ -112,8 +142,7 @@ public class Navigator implements Module{
                         doPathing();
                     }
                     else if(desiredDirection!=Direction.OMNI){
-                        motor.setDirection(desiredDirection);
-                        currDirection = desiredDirection;
+                        turn(desiredDirection);
                         //destination reached
                         actionQueue=null;
                     }
@@ -128,13 +157,11 @@ public class Navigator implements Module{
                     }
                     else if(desiredDirection==Direction.OMNI){
                         Direction dir = currLocation.directionTo(dest);
-                        motor.setDirection(dir);
-                        currDirection = dir;
+                        turn(dir);
                         actionQueue=null;
                     }
                     else{
-                        motor.setDirection(desiredDirection);
-                        currDirection = desiredDirection;
+                        turn(desiredDirection);
                         actionQueue=null;
                     }
                 }
@@ -147,7 +174,7 @@ public class Navigator implements Module{
                     {
                         System.out.println("not matiching!!!!");
                     }
-                    moveForward();
+                    driveForward();
                     actionQueueOffset++;
                 }
                 else{
@@ -166,8 +193,7 @@ public class Navigator implements Module{
                 }
             }
             else{
-                motor.setDirection(actionQueue[actionQueueOffset]);
-                currDirection = actionQueue[actionQueueOffset];
+                turn(actionQueue[actionQueueOffset]);
             }
         }
         catch(GameActionException e){
