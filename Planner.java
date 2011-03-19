@@ -10,6 +10,11 @@ public abstract class Planner{
     protected int maxBytecodes = GameConstants.BYTECODE_LIMIT_BASE;
     //TODO, find out how many it actually takes
     private static final int DO_IDLE_OVERHEAD = 100;
+
+    public Planner(RobotController rc){
+        myRC=rc;
+    }
+
     public void init(){
         for(Module m : modules){
             if(m!=null){
@@ -29,7 +34,10 @@ public abstract class Planner{
     public void doYield(){
         int roundNum = Clock.getRoundNum();
         if(Clock.getBytecodesLeft()>100){
-            getModule(ModuleType.NAVIGATION).doIdleTasks();
+            Module nav = getModule(ModuleType.NAVIGATION);
+            if(nav!=null){
+                nav.doIdleTasks();
+            }
         }
         if(Clock.getBytecodesLeft()>20 && roundNum==Clock.getRoundNum()){
             //if we have enough bytecodes to safely ensure that the yield
