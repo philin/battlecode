@@ -170,5 +170,8 @@ public class Map implements Module{
         //STUB
         currNode = getNode(myRC.getLocation());
     }
+
+    public void doIdleTasks(){
+    }
 }
 

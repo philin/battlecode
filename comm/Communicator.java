@@ -109,4 +109,7 @@ public class Communicator implements Module{
         this.planner = planner;
         currMessage = new Message();
     }
+
+    public void doIdleTasks(){
+    }
 }

@@ -228,4 +228,8 @@ public class Navigator implements Module{
     public ModuleType getType(){
         return ModuleType.NAVIGATION;
     }
+
+    public void doIdleTasks(){
+        //do nothing for now
+    }
 }
