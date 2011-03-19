@@ -20,7 +20,7 @@ public class AStar implements PathPlanner{
             return 0;
         }
     }
-
+    private static final int MIN_BYTECODES=1000;
     private static final double SQRT2=Math.sqrt(2);
     Map map;
     Map.Node[][] nodes;
@@ -28,6 +28,10 @@ public class AStar implements PathPlanner{
     private FastPriorityQueue<Map.Node> openQueue = new FastPriorityQueue<Map.Node>(new NodeComparator());
     RobotController myRC;
     MapLocation dest;
+    Map.Node destNode;
+    boolean done;
+    Direction[] path;
+    Direction[] oldPath;
 
     private int stateCounter=0;
 
@@ -120,6 +124,56 @@ public class AStar implements PathPlanner{
             steps++;
         }
         return null;
+    }
+
+    private void reconstructPath(Map.Node node){
+        path = new Direction[node.navInfo.length];
+        while(node.navInfo.length!=0){
+            path[node.navInfo.length-1]=node.navInfo.parentDir;
+            node = node.navInfo.parent;
+        }
+    }
+
+    public void doPlanning(int minSteps){
+        if(done){
+            return;
+        }
+        int currRound = Clock.getRoundNum();
+        while(!openQueue.isEmpty() &&
+              (minSteps>0 || (Clock.getBytecodesLeft()>MIN_BYTECODES &&
+                              Clock.getRoundNum()==currRound))){
+            Map.Node node = openQueue.poll();
+            node.navInfo.state=-stateCounter;
+            if(node!=destNode){
+                doNeighbors(node);
+            }
+            else{
+                done = true;
+                //reconstruct the path
+                reconstructPath(node);
+            }
+            minSteps--;
+        }
+    }
+
+    public void setDest(MapLocation dest){
+        this.dest = dest;
+        destNode = map.getNode(dest);
+        done = false;
+    }
+
+    public Direction[] getPath(){
+        if(!done){
+            if(openQueue.isEmpty()){
+                path = null;
+            }
+            else{
+                reconstructPath(openQueue.poll());
+            }
+        }
+        oldPath = path;
+        path = null;
+        return oldPath;
     }
 }
 

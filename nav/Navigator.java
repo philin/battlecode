@@ -230,6 +230,6 @@ public class Navigator implements Module{
     }
 
     public void doIdleTasks(){
-        //do nothing for now
+        pather.doPlanning(0);
     }
 }
