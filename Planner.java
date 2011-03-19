@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import battlecode.common.*;
 
 public abstract class Planner{
+    private static Planner currPlanner;
     protected RobotController myRC;
     protected Module[] modules = new Module[ModuleType.NUM_OF_TYPES];
     protected LinkedList<IdleTask> tasks = new LinkedList<IdleTask>();
@@ -12,6 +13,7 @@ public abstract class Planner{
     private static final int DO_IDLE_OVERHEAD = 100;
 
     public Planner(RobotController rc){
+        currPlanner = this;
         myRC=rc;
     }
 
@@ -31,10 +33,10 @@ public abstract class Planner{
         return modules[type.ordinal()];
     }
 
-    public void doYield(){
+    public static void doYield(){
         int roundNum = Clock.getRoundNum();
         if(Clock.getBytecodesLeft()>100){
-            Module nav = getModule(ModuleType.NAVIGATION);
+            Module nav = currPlanner.getModule(ModuleType.NAVIGATION);
             if(nav!=null){
                 nav.doIdleTasks();
             }
@@ -42,7 +44,7 @@ public abstract class Planner{
         if(Clock.getBytecodesLeft()>20 && roundNum==Clock.getRoundNum()){
             //if we have enough bytecodes to safely ensure that the yield
             //happens in the right round call yield
-            myRC.yield();
+            currPlanner.myRC.yield();
         }
         else{
             //otherwise loop till the round finishes
