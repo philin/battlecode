@@ -26,7 +26,7 @@ public abstract class Planner{
         return modules[type.ordinal()];
     }
 
-    public void doYeild(){
+    public void doYield(){
         int roundNum = Clock.getRoundNum();
         if(Clock.getBytecodesLeft()>100){
             getModule(ModuleType.NAVIGATION).doIdleTasks();
