@@ -93,7 +93,7 @@ public class BasicBuilder extends Unit
                     }
                 }
                 while(this.motor.isActive())
-                    myRC.yield();
+                    doYield();
 
                 navigator.setDirection(myRC.getDirection().rotateRight());
             }
@@ -104,7 +104,7 @@ public class BasicBuilder extends Unit
             navigator.setDestination(myRC.getLocation(), false);
             while(!navigator.isAtDest())
             {
-                myRC.yield();
+                doYield();
                 navigator.doMovement();
             }
 
@@ -134,7 +134,7 @@ public class BasicBuilder extends Unit
         {
             while (true)
             {
-                myRC.yield();
+                doYield();
                 navigator.doMovement();
                 changeCounter++;
                 if(changeCounter>10){
@@ -153,7 +153,7 @@ public class BasicBuilder extends Unit
                     }
                     changeCounter = 0;
                     navigator.setDestination(newLocation);
-                    myRC.yield();
+                    doYield();
                 }
 
                 if ( this.scancount == SCAN_DELAY )
@@ -174,7 +174,7 @@ public class BasicBuilder extends Unit
 
                     if (myRC.getTeamResources() > 100)
                     {
-                        myRC.yield();
+                        doYield();
                         Robot[] nearbyRobots = this.sensor.senseNearbyGameObjects(Robot.class);
 
                         for(Robot r : nearbyRobots)
@@ -218,7 +218,7 @@ public class BasicBuilder extends Unit
         navigator.setDestination(targetMine, false);
         while (true)
         {
-            myRC.yield();
+            doYield();
 
             if (!this.navigator.isAtDest())
             {
@@ -241,7 +241,7 @@ public class BasicBuilder extends Unit
 
     private void buildingOnMineBehavior()
     {
-        myRC.yield();
+        doYield();
         try{
             if (myRC.getTeamResources() > Chassis.BUILDING.cost  &&
                 this.builder.canBuild(UnitCommon.BASIC_BUILDING_CHASSIS,this.targetMine))
@@ -268,7 +268,7 @@ public class BasicBuilder extends Unit
         navigator.setDestination(targetUnit, false);
         while (true)
         {
-            myRC.yield();
+            doYield();
 
             if (!this.navigator.isAtDest())
             {
@@ -287,7 +287,7 @@ public class BasicBuilder extends Unit
     private void activatingRobotBehavior()
     {
         try{
-            myRC.yield();
+            doYield();
             if(myRC.getTeamResources()>100 && myRC.getLocation().distanceSquaredTo(targetUnit)==1)
             {
                 GameObject object = this.sensor.senseObjectAtLocation(
@@ -344,10 +344,9 @@ public class BasicBuilder extends Unit
                 activatingRobotBehavior();
                 break;
             default:
-                this.myRC.yield();
+                super.doYield();
                 break;
             }
-            doIdleTasks();
         }
 
     }

@@ -104,7 +104,7 @@ public class Util
             if(builder.isActive() ||
                myRC.getTeamResources() < component.cost)
             {
-                myRC.yield();
+                Planner.doYield();
             }
             else
             {

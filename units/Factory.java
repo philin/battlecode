@@ -127,7 +127,7 @@ public class Factory extends Unit
         while (true)
         {
             try{
-                myRC.yield();
+                doYield();
                 GameObject[] objects = sightsensor.senseNearbyGameObjects(GameObject.class);
                 for(GameObject go : objects)
                 {
@@ -152,7 +152,7 @@ public class Factory extends Unit
                 Direction next = currdir.rotateRight();
                 while(motor.isActive())
                 {
-                    myRC.yield();
+                    doYield();
                 }
                 motor.setDirection(next);
                 scanspincount++;
@@ -185,7 +185,7 @@ public class Factory extends Unit
 
         while(smg0.isActive() || smg1.isActive())
         {
-            myRC.yield();
+            doYield();
         }
 
         while( true )
@@ -219,7 +219,7 @@ public class Factory extends Unit
                 }
                 while(smg0.isActive() || smg1.isActive())
                 {
-                    myRC.yield();
+                    doYield();
                 }
             }
             catch(Exception ex)
@@ -239,7 +239,7 @@ public class Factory extends Unit
     protected void spawningUnitBehavior()
     {
 
-        myRC.yield();
+        doYield();
         if(myRC.getTeamResources() > 300 )
         {
 
@@ -317,10 +317,9 @@ public class Factory extends Unit
                 spawningUnitBehavior();
                 break;
             default:
-                myRC.yield();
+                doYield();
                 break;
             }
-            doIdleTasks();
         }
     }
 

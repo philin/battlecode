@@ -62,7 +62,7 @@ public class BasicBuilding extends Unit
     protected void selfUpgradeBehavior()
     {
 
-        myRC.yield();
+        doYield();
         try{
             Util.addComponent(myRC,
                               builder,
@@ -135,7 +135,7 @@ public class BasicBuilding extends Unit
         while (true)
         {
             try{
-                myRC.yield();
+                doYield();
                 GameObject[] objects = radarsensor.senseNearbyGameObjects(GameObject.class);
                 for(GameObject go : objects)
                 {
@@ -175,7 +175,7 @@ public class BasicBuilding extends Unit
                 Direction next = currdir.rotateRight();
                 while(motor.isActive())
                 {
-                    myRC.yield();
+                    doYield();
                 }
                 motor.setDirection(next);
                 scanspincount++;
@@ -206,7 +206,7 @@ public class BasicBuilding extends Unit
         */
         while(weapon.isActive())
         {
-            myRC.yield();
+            doYield();
         }
 
         while( true )
@@ -229,7 +229,7 @@ public class BasicBuilding extends Unit
 
                 while(weapon.isActive())
                 {
-                    myRC.yield();
+                    doYield();
                 }
             }
             catch(Exception ex)
@@ -251,7 +251,7 @@ public class BasicBuilding extends Unit
     protected void spawningUnitBehavior()
     {
 
-        myRC.yield();
+        doYield();
         if(myRC.getTeamResources() > 300 )
         {
 
@@ -334,7 +334,7 @@ public class BasicBuilding extends Unit
                 spawningUnitBehavior();
                 break;
             default:
-                myRC.yield();
+                doYield();
                 break;
             }
             doIdleTasks();

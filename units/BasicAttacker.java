@@ -71,7 +71,7 @@ public class BasicAttacker extends Unit
         {
             while (true)
             {
-                myRC.yield();
+                doYield();
                 navigator.doMovement();
                 changeCounter++;
                 if(changeCounter>10){
@@ -90,13 +90,13 @@ public class BasicAttacker extends Unit
                     }
                     changeCounter = 0;
                     navigator.setDestination(newLocation);
-                    myRC.yield();
+                    doYield();
                 }
 
                 if ( this.scancount == SCAN_DELAY )
                 {
 
-                    myRC.yield();
+                    doYield();
                     GameObject[] objects = radarsensor.senseNearbyGameObjects(GameObject.class);
                     for(GameObject go : objects)
                     {
@@ -142,7 +142,7 @@ public class BasicAttacker extends Unit
         */
         while(weapon.isActive())
         {
-            myRC.yield();
+            doYield();
         }
 
         while( true )
@@ -164,7 +164,7 @@ public class BasicAttacker extends Unit
 
                 while(weapon.isActive())
                 {
-                    myRC.yield();
+                    doYield();
                 }
             }
             catch(Exception ex)
@@ -195,7 +195,7 @@ public class BasicAttacker extends Unit
                 attackingBehavior();
                 break;
             default:
-                this.myRC.yield();
+                doYield();
                 break;
             }
             doIdleTasks();

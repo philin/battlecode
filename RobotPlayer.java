@@ -112,6 +112,8 @@ public class RobotPlayer implements Runnable
                     basicAttacker.runBehavior();
                 }
             }
+            //we cannot replace this yield with doYield because planner is not
+            //ready
             myRC.yield();
         }
 
