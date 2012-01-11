@@ -1,4 +1,4 @@
-package team046;
+package team048;
 
 import java.util.LinkedList;
 import battlecode.common.*;
@@ -8,7 +8,7 @@ public abstract class Planner{
     protected RobotController myRC;
     protected Module[] modules = new Module[ModuleType.NUM_OF_TYPES];
     protected LinkedList<IdleTask> tasks = new LinkedList<IdleTask>();
-    protected int maxBytecodes = GameConstants.BYTECODE_LIMIT_BASE;
+    protected int maxBytecodes = GameConstants.BYTECODE_LIMIT;
     //TODO, find out how many it actually takes
     private static final int DO_IDLE_OVERHEAD = 100;
 

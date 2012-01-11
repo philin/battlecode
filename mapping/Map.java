@@ -1,24 +1,20 @@
-package team046.mapping;
+package team048.mapping;
 
 import battlecode.common.*;
 
-import team046.*;
-import team046.nav.*;
+import team048.*;
+import team048.nav.*;
 
 //the map itself is not actually aware of where any of the locations are in absolute coordinates, only relative to eachother
 public class Map implements Module{
     public class Node{
         public TerrainTile terrain;
-        public Mine mine;
         public NavInfo navInfo;//path planning data goes here
         public Node[] neighbors;
         public Node(){
             terrain = null;
             navInfo = new NavInfo();
             neighbors = new Node[8];
-        }
-        public void addMine(Mine mine){
-            this.mine = mine;
         }
         public void updateTerrain(TerrainTile tile){
             if(terrain==tile){
@@ -68,10 +64,6 @@ public class Map implements Module{
                 map[i][j].neighbors[7]=map[(i+MAP_SIZE-1)%MAP_SIZE][(j+MAP_SIZE-1)%MAP_SIZE];
             }
         }
-    }
-
-    public void setSensor(SensorController controller){
-        //sensor = controller;
     }
 
     //call this every time the robot moves

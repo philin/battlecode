@@ -1,10 +1,10 @@
-package team046.nav;
+package team048.nav;
 
 import java.util.LinkedList;
 
 import battlecode.common.*;
-import team046.mapping.Map;
-import team046.*;
+import team048.mapping.Map;
+import team048.*;
 
 //XXX currently does navigation for ground units.
 //I plan to make this abstract and create subclasses for ground and air units
@@ -21,7 +21,7 @@ public class Navigator implements Module{
     private Direction desiredDirection;
     private boolean enterDest=true;
     private MapLocation currLocation;
-    private MovementController motor;
+    //private MovementController motor;
     private int waitCount=0;
     private static final int STUCK_THRESHOLD=10;
     private static final int LONG_DISTANCE_THRESHOLD=25;
@@ -31,9 +31,8 @@ public class Navigator implements Module{
     private Map map;
     private RobotController rc;
 
-    public Navigator(RobotController rc, MovementController motor){
+    public Navigator(RobotController rc){
         this.rc = rc;
-        this.motor = motor;
     }
 
     //XXX this will become abstract soon
@@ -102,7 +101,7 @@ public class Navigator implements Module{
     }
 
     public boolean isActive(){
-        return motor.isActive();
+        return rc.isMovementActive();
     }
 
     public void setDirection(Direction dir){
@@ -124,12 +123,12 @@ public class Navigator implements Module{
     }
 
     private void turn(Direction dir) throws GameActionException{
-        motor.setDirection(dir);
+        rc.setDirection(dir);
         currDirection = dir;
     }
 
     private void driveForward() throws GameActionException{
-        motor.moveForward();
+        rc.moveForward();
         map.didMove(currDirection);
         pather.didMove(currDirection);
         currLocation = currLocation.add(currDirection);
@@ -137,7 +136,7 @@ public class Navigator implements Module{
 
     public void doMovement(){
         try{
-            if(motor.isActive() || actionQueue==null){
+            if(isActive() || actionQueue==null){
                 return;
             }
             if(actionQueueOffset>=actionQueueLength){
@@ -173,7 +172,7 @@ public class Navigator implements Module{
             }
             if(actionQueue[actionQueueOffset]==currDirection){
                 //move forward
-                if(motor.canMove(currDirection)){
+                if(rc.canMove(currDirection)){
                     if(rc.getDirection() != currDirection)
                     {
                         System.out.println("not matiching!!!!");
@@ -207,7 +206,7 @@ public class Navigator implements Module{
     }
 
     public boolean isAtDest(){
-        return actionQueue==null && !motor.isActive();
+        return actionQueue==null && !isActive();
     }
 
     public void init(Planner planner){

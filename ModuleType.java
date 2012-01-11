@@ -1,4 +1,4 @@
-package team046;
+package team048;
 
 public enum ModuleType{
     PLANNER,NAVIGATION,MAPPING,COMMUNICATION;

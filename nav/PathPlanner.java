@@ -1,4 +1,4 @@
-package team046.nav;
+package team048.nav;
 
 import battlecode.common.*;
 

@@ -1,10 +1,10 @@
-package team046.nav;
+package team048.nav;
 
 import battlecode.common.*;
 
-import team046.Util;
-import team046.util.*;
-import team046.mapping.*;
+import team048.Util;
+import team048.util.*;
+import team048.mapping.*;
 import java.util.Comparator;
 
 public class AStar implements PathPlanner{

@@ -1,6 +1,6 @@
-package team046.nav;
+package team048.nav;
 
-import team046.mapping.*;
+import team048.mapping.*;
 import battlecode.common.*;
 
 public class NavInfo{
